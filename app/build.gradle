@@ -1,0 +1,84 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.demo.mvvmdaggerkotlindemo"
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        "room.schemaLocation":"$projectDir/schemas".toString(),
+                        "room.incremental":"true",
+                        "room.expandProjection":"true"]
+
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0'
+
+    implementation 'androidx.core:core-ktx:1.1.0'
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+
+    // Dagger 2
+    api "com.google.dagger:dagger-android:$dagger2_version"
+    api "com.google.dagger:dagger-android-support:$dagger2_version" // if you use the support libraries
+    kapt "com.google.dagger:dagger-android-processor:$dagger2_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger2_version"
+
+
+    //Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3'
+
+    //Timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    //Room
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    testImplementation "androidx.room:room-testing:$room_version"
+
+    //TextInputLayout
+    implementation 'com.google.android.material:material:1.0.0'
+    //Constraint
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_version"
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}
