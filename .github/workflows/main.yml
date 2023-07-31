@@ -1,8 +1,10 @@
 # .github/workflows/main.yml
+
 name: My CI/CD Workflow
 
 on:
   push:
+    branches: # Remove the "branches" specification to run on every push
   pull_request:
 
 jobs:
@@ -58,7 +60,9 @@ jobs:
           # Add additional keys outside the shard block
           json+="\"project\": \"${{ inputs.project }}\", \"custom_id\": \"${{ inputs.custom_id }}\", "
 
-          json+="\"strategies\": $(echo ${strategies[@]} | jq -s .), "  # Strategies array
+          json+="\"mapping\": $(
+            echo "${strategies[@]}" | jq -s '.'  # Convert strategies array to JSON
+          ), "
 
           json+="\"numberOfShard\": $strategies, "  # Number of strategies
           json+="\"deviceSelection\": \"any\""   # Device selection
