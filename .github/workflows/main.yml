@@ -4,7 +4,8 @@ name: My CI/CD Workflow
 
 on:
   push:
-    branches: # Remove the "branches" specification to run on every push
+    branches:
+      - '*' # Run on every push to any branch
   pull_request:
 
 jobs:
@@ -44,17 +45,23 @@ jobs:
             feature_files=($(find ${{ inputs.feature_folder }} -type f -name "*.feature" | head -n $max_files_per_strategy))
             max_files_per_strategy=$(( max_files_per_strategy - ${#feature_files[@]} ))
 
+            # Convert feature_files array to a comma-separated string
+            files_string=$(printf "\"%s\"," "${feature_files[@]}")
+            files_string=${files_string%,}  # Remove the trailing comma
+
             # Create the strategy object and add it to the array
-            strategy_object="{\"name\": \"Shard $strategy\", \"strategy\": \"Cucumber\", \"values\": {\"features\": $(echo ${feature_files[@]} | jq -R . | jq -s .)}}"
+            strategy_object="{\"name\": \"Shard $strategy\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
             strategies+=("$strategy_object")
           done
 
           # Construct the JSON output with the strategies array
           json="{"
 
-          # Include the devices block if devices are provided
-          if [ "${{ inputs.device_list }}" != "none" ]; then
+          # Include the devices block if devices are provided or use a default value
+          if [ -n "${{ inputs.device_list }}" ]; then
             json+="\"devices\": [${{ inputs.device_list }}], "
+          else
+            json+="\"devices\": [\"device1\", \"device2\"], "  # Default device list
           fi
 
           # Add additional keys outside the shard block
