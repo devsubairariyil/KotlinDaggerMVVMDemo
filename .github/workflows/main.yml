@@ -27,8 +27,14 @@ jobs:
           # Create an empty array to store strategy objects
           strategies=()
 
+          # Get the list of feature files into an array
+          files=()
+          while IFS= read -r -d '' file; do
+            files+=("$file")
+          done < <(find ${{ inputs.feature_folder }} -type f -name "*.feature" -print0)
+
           # Calculate the number of strategies (5 or 3) based on the total file count
-          total_files=$(find ${{ inputs.feature_folder }} -type f -name "*.feature" | wc -l)
+          total_files=${#files[@]}
           if [[ $total_files -gt 10 ]]; then
             strategies=5
           elif [[ $total_files -gt 3 ]]; then
@@ -44,43 +50,20 @@ jobs:
           # Increment max_files_per_strategy by 1 if the remainder is greater than 0
           max_files_per_strategy=$(( files_per_strategy + (remaining_files > 0 ? 1 : 0) ))
 
-          # Initialize the strategy and current files list
-          current_strategy=1
-          current_files=()
+          # Create and allocate files to the strategies using Round Robin logic
+          for (( i = 0; i < strategies; i++ )); do
+            strategy_files=()
+            for (( j = i; j < total_files; j += strategies )); do
+              strategy_files+=("${files[j]}")
+            done
 
-          # Loop through the files and create strategies using Round Robin logic
-          for file in $(find ${{ inputs.feature_folder }} -type f -name "*.feature"); do
-            # Add the file to the current strategy's files list
-            current_files+=("$file")
+            # Convert strategy_files array to a comma-separated string
+            files_string=$(IFS=, ; echo "${strategy_files[*]}")
 
-            # Check if it's time to create a new strategy
-            if [[ ${#current_files[@]} -eq $max_files_per_strategy ]]; then
-              # Convert current_files array to a comma-separated string
-              files_string=$(printf "\"%s\"," "${current_files[@]}")
-              files_string=${files_string%,}  # Remove the trailing comma
-
-              # Create the strategy object and add it to the array
-              strategy_object="{\"name\": \"Shard $current_strategy\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
-              strategies+=("$strategy_object")
-
-              # Reset the current_files list for the next strategy
-              current_files=()
-
-              # Increment the current strategy index using Round Robin
-              current_strategy=$(( (current_strategy % strategies) + 1 ))
-            fi
-          done
-
-          # Handle any remaining files for the last strategy
-          if [[ ${#current_files[@]} -gt 0 ]]; then
-            # Convert current_files array to a comma-separated string
-            files_string=$(printf "\"%s\"," "${current_files[@]}")
-            files_string=${files_string%,}  # Remove the trailing comma
-
-            # Create the strategy object for the last strategy and add it to the array
-            strategy_object="{\"name\": \"Shard $current_strategy\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
+            # Create the strategy object and add it to the array
+            strategy_object="{\"name\": \"Shard $((i+1))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
             strategies+=("$strategy_object")
-          fi
+          done
 
           # Construct the JSON output with the strategies array
           json="{"
