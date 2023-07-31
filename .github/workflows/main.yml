@@ -91,7 +91,18 @@ jobs:
           json+="\"custom_id\": \"${{ inputs.custom_id }}\", "
           json+="\"locale\": \"en-GB\", "
 
-          json+="\"mapping\": [${{ join(strategies_array, ',') }}], "
+          json+="\"mapping\": ["
+
+          # Append the strategy objects to the JSON output
+          for (( i = 0; i < ${#strategies_array[@]}; i++ )); do
+            json+="${strategies_array[$i]}"
+            # Add a comma after each strategy except the last one
+            if (( i < ${#strategies_array[@]} - 1 )); then
+              json+=", "
+            fi
+          done
+
+          json+="], "
 
           json+="\"numberOfShard\": $strategies, "  # Number of strategies
           json+="\"deviceSelection\": \"any\""   # Device selection
