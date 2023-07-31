@@ -4,7 +4,9 @@ name: My CI/CD Workflow
 
 on:
   push:
-
+    branches:
+      - develop
+      - release/*
   pull_request:
 
 jobs:
@@ -16,17 +18,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Debug Feature Folder Contents
+        run: |
+          echo "Checking contents of the feature folder..."
+          ls ${{ inputs.feature_folder }}
+
       - name: Create JSON files
         run: |
-          json="{"
-
-          # Include the devices block if devices are provided
-          if [ "${{ inputs.device_list }}" != "none" ]; then
-            json+="\"devices\": [${{ inputs.device_list }}], "
-          fi
-
-          # Add additional keys outside the shard block
-          json+="\"project\": \"${{ inputs.project }}\", \"custom_id\": \"${{ inputs.custom_id }}\", "
+          # Create an empty array to store strategy objects
+          strategies=()
 
           # Calculate the number of strategies (5 or 3) based on the total file count
           total_files=$(find ${{ inputs.feature_folder }} -type f -name "*.feature" | wc -l)
@@ -41,37 +41,33 @@ jobs:
           # Calculate the maximum number of files per strategy
           max_files_per_strategy=$(( (total_files + strategies - 1) / strategies ))
 
-          # Include the shard block
-          json+="\"strategies\": ["
-
-          shard_counter=1
-          current_files=0
+          # Loop through the strategies and add each strategy object to the array
           for strategy in $(seq 1 $strategies); do
-            json+="{"
-            json+="\"name\": \"Shard $strategy\", "
-            json+="\"strategy\": \"Cucumber\", "
+            feature_files=($(find ${{ inputs.feature_folder }} -type f -name "*.feature" | head -n $max_files_per_strategy))
+            max_files_per_strategy=$(( max_files_per_strategy - ${#feature_files[@]} ))
 
-            # Loop through the feature files and append them to the strategy
-            json+="\"values\": {\"features\": ["
-            while IFS= read -r feature_file; do
-              json+="\"$feature_file\","
-              ((current_files++))
-
-              # Check if the current strategy reaches the maximum files per strategy
-              if [[ $current_files -eq $max_files_per_strategy ]]; then
-                break
-              fi
-            done < <(find ${{ inputs.feature_folder }} ! -type d -type f -name "*.feature" -print)
-
-            json="${json::-1}"  # Remove the trailing comma
-            json+="]},"
-            current_files=0
-
-            json+="},"
+            # Create the strategy object and add it to the array
+            strategy_object="{\"name\": \"Shard $strategy\", \"strategy\": \"Cucumber\", \"values\": {\"features\": $(echo ${feature_files[@]} | jq -R . | jq -s .)}}"
+            strategies+=("$strategy_object")
           done
-          json="${json::-1}"  # Remove the trailing comma
 
-          json+="]}"  # Close the strategies block
+          # Construct the JSON output with the strategies array
+          json="{"
+
+          # Include the devices block if devices are provided
+          if [ "${{ inputs.device_list }}" != "none" ]; then
+            json+="\"devices\": [${{ inputs.device_list }}], "
+          fi
+
+          # Add additional keys outside the shard block
+          json+="\"project\": \"${{ inputs.project }}\", \"custom_id\": \"${{ inputs.custom_id }}\", "
+
+          json+="\"strategies\": $(echo ${strategies[@]} | jq -s .), "  # Strategies array
+
+          json+="\"numberOfShard\": $strategies, "  # Number of strategies
+          json+="\"deviceSelection\": \"any\""   # Device selection
+
+          json+="}"
 
           # Save JSON to a file named config.json in the .github folder
           echo "$json" > .github/config.json
