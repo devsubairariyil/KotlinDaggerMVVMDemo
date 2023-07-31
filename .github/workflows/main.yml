@@ -86,8 +86,8 @@ jobs:
                strategy_files=()
              fi
              
-             folderName="assets"
-             text=$files[i]
+             folderName="assets/"
+             text=${files[i]}
              filteredName=$(echo "$text" | grep -o -P "(?<=${folderName}).*")
           
              echo currentFile actual = $text folder-name = $folderName Filtered = $filteredName 
