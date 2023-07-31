@@ -48,7 +48,11 @@ jobs:
           remaining_files=$(( total_files % strategies ))
 
           # Increment max_files_per_strategy by 1 if the remainder is greater than 0
-          max_files_per_strategy=$(( files_per_strategy + (remaining_files > 0 ? 1 : 0) ))
+          if [[ $remaining_files -gt 0 ]]; then
+            max_files_per_strategy=$(( files_per_strategy + 1 ))
+          else
+            max_files_per_strategy=$files_per_strategy
+          fi
 
           # Create and allocate files to the strategies using Round Robin logic
           for (( i = 0; i < strategies; i++ )); do
