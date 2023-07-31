@@ -87,7 +87,7 @@ jobs:
              fi
              
              folderName="features"
-             text=${{files[i]}}
+             text=$files[i]
              filteredName=$(echo "$text" | grep -o -P "(?<=${folderName}).*")
           
              echo currentFile actual = $text folder-name = $folderName Filtered = $filteredName 
