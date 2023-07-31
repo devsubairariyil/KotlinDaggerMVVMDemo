@@ -69,26 +69,20 @@ jobs:
           json+="\"mapping\": ["
 
           # Create and allocate files to the strategies using Round Robin logic
-          for (( i = 0; i < strategies; i++ )); do
-            strategy_files=()
-            for (( j = i; j < total_files; j += strategies )); do
-              strategy_files+=("\"${files[j]}\"")
-            done
+          strategyCount=1
+           for (( i = 1; i < total_files; i++ )); do
+             files_string=$(IFS=, ; echo "${strategy_files[*]}")
+             if((i%max_files_per_strategy == 0)); then
+               strategy_object="{\"name\": \"Shard $((i))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
+               json+="$strategy_object"
+               if (( strategyCount < strategies )); then
+                 json+=", "
+               fi
+               strategyCount+=1
+             fi
+             strategy_files+=("\"${files[j]}\"")
 
-            # Join strategy_files array into a comma-separated string
-            files_string=$(IFS=, ; echo "${strategy_files[*]}")
-
-            # Create the strategy object
-            strategy_object="{\"name\": \"Shard $((i+1))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
-
-            # Append the strategy object to the JSON output
-            json+="$strategy_object"
-
-            # Add a comma after each strategy except the last one
-            if (( i < strategies - 1 )); then
-              json+=", "
-            fi
-          done
+           done
 
           json+="], "
 
