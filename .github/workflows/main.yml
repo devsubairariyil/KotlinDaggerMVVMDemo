@@ -1,108 +1,64 @@
-# .github/workflows/main.yml
-
-name: My CI/CD Workflow
+name: Generate Strategy JSON
 
 on:
   push:
     branches:
-      - '*' # Run on every push to any branch
-  pull_request:
+      - '*'
 
 jobs:
-  strategy_job:
-    name: Create Strategy Config
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Debug Feature Folder Contents
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Determine Number of Strategies
+        id: num_strategies
         run: |
-          echo "Checking contents of the feature folder..."
-          ls ${{ inputs.feature_folder }}
+          max_files_per_strategy=3
+          total_files=$(find $FEATURE_FOLDER -name "*.feature" -type f | wc -l)
+          num_strategies=$((total_files / max_files_per_strategy))
+          if ((total_files % max_files_per_strategy > 0)); then
+            num_strategies=$((num_strategies + 1))
+          fi
+          echo "::set-output name=num_strategies::$num_strategies"
 
-      - name: Create JSON files
+      - name: Create JSON File
+        id: create_json
         run: |
-          # Get the list of feature files into an array
-          files=()
-          while IFS= read -r -d '' file; do
-            files+=("$file")
-          done < <(find ${{ inputs.feature_folder }} -type f -name "*.feature" -print0)
+          max_files_per_strategy=3
+          total_files=$(find $FEATURE_FOLDER -name "*.feature" -type f | wc -l)
+          num_strategies=${{ steps.num_strategies.outputs.num_strategies }}
 
-          # Calculate the number of strategies (5 or 3) based on the total file count
-          total_files=${#files[@]}
-          if [[ $total_files -gt 10 ]]; then
-            strategies=5
-          elif [[ $total_files -gt 3 ]]; then
-            strategies=3
-          else
-            strategies=1
-          fi
+          strategyList="[
+          "
+          strategyCounter=1
+          currentStrategy=""
 
-          # Calculate the number of files for each strategy
-          files_per_strategy=$(( total_files / strategies ))
-          remaining_files=$(( total_files % strategies ))
-          max_files_per_strategy=$(( files_per_strategy + (remaining_files > 0) ))
-
-          # Create and allocate files to the strategies
-          strategies_array=()
-          strategy_files=()
-
-          for (( i = 0; i < total_files; i++ )); do
-            file="${files[i]}"
-            strategy_files+=("\"${file}\"")
-
-            if (( ${#strategy_files[@]} == max_files_per_strategy )) || (( i == total_files - 1 )); then
-              # Join strategy_files array into a comma-separated string
-              files_string=$(IFS=, ; echo "${strategy_files[*]}")
-
-              # Create the strategy object
-              strategy_object="{\"name\": \"Strategy $((i / max_files_per_strategy + 1))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
-
-              # Add the strategy object to the strategies_array
-              strategies_array+=("$strategy_object")
-
-              # Reset strategy_files array for the next strategy
-              strategy_files=()
+          find $FEATURE_FOLDER -name "*.feature" -type f | while read -r fileName; do
+            if [ $(( strategyCounter % max_files_per_strategy )) -eq 1 ]; then
+              if [ $strategyCounter -gt 1 ]; then
+                strategyList+=$(echo $currentStrategy | jq -c .)
+                strategyList+=","
+              fi
+              currentStrategy="{\"name\": \"Strategy - $strategyCounter\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [\"$fileName\""
+            else
+              currentStrategy+=",\"$fileName\""
             fi
+            strategyCounter=$((strategyCounter + 1))
           done
-
-          # Construct the JSON output with the strategies_array
-          json="{"
-
-          # Include the devices block if devices are provided or use a default value
-          if [ -n "${{ inputs.device_list }}" ]; then
-            json+="\"devices\": [${{ inputs.device_list }}], "
-          else
-            json+="\"devices\": [\"device1\", \"device2\"], "  # Default device list
-          fi
-
-          # Add additional keys outside the shard block
-          json+="\"project\": \"${{ inputs.project }}\", "
-          json+="\"custom_id\": \"${{ inputs.custom_id }}\", "
-          json+="\"locale\": \"en-GB\", "
-
-          json+="\"mapping\": ["
-
-          # Append the strategy objects to the JSON output
-          for (( i = 0; i < ${#strategies_array[@]}; i++ )); do
-            json+="${strategies_array[$i]}"
-            # Add a comma after each strategy except the last one
-            if (( i < ${#strategies_array[@]} - 1 )); then
-              json+=", "
-            fi
-          done
-
-          json+="], "
-
-          json+="\"numberOfShard\": $strategies, "  # Number of strategies
-          json+="\"deviceSelection\": \"any\""   # Device selection
-
-          json+="}"
+          currentStrategy+="]}}"
+          strategyList+=$(echo $currentStrategy | jq -c .)
+          strategyList+="]"
 
           # Save JSON to a file named config.json in the .github folder
-          echo "$json" > .github/config.json
+          echo "$strategyList" > .github/config.json
 
       - name: Show Config JSON
         run: cat .github/config.json
