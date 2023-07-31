@@ -91,7 +91,7 @@ jobs:
              filteredName=$(echo "$text" | grep -o -P "(?<=${folderName}).*")
           
              echo currentFile actual = $text folder-name = $folderName Filtered = $filteredName 
-             strategy_files+=("\"${filteredName}\"")
+             strategy_files+=("\"$filteredName\"")
 
            done
 
