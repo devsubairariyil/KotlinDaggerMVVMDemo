@@ -2,6 +2,9 @@
 
 # Define the strategy job template
 name: Strategy Job Template
+on:
+  # Lines below let you run workflow manually and on each commit
+  workflow_dispatch:
 runs-on: ubuntu-latest
 inputs:
   feature_folder:
