@@ -37,13 +37,18 @@ jobs:
             strategies=1
           fi
 
-          # Calculate the maximum number of files per strategy
-          max_files_per_strategy=$(( (total_files + strategies - 1) / strategies ))
+          # Calculate the number of files for each strategy and the remaining files
+          files_per_strategy=$(( total_files / strategies ))
+          remaining_files=$(( total_files % strategies ))
 
           # Loop through the strategies and add each strategy object to the array
+          start_idx=1
           for strategy in $(seq 1 $strategies); do
-            feature_files=($(find ${{ inputs.feature_folder }} -type f -name "*.feature" | head -n $max_files_per_strategy))
-            max_files_per_strategy=$(( max_files_per_strategy - ${#feature_files[@]} ))
+            # Calculate the end index for this strategy
+            end_idx=$(( start_idx + files_per_strategy - 1 + (strategy <= remaining_files ? 1 : 0) ))
+
+            # Get the feature files for this strategy
+            feature_files=($(find ${{ inputs.feature_folder }} -type f -name "*.feature" | head -n $end_idx | tail -n +$start_idx))
 
             # Convert feature_files array to a comma-separated string
             files_string=$(printf "\"%s\"," "${feature_files[@]}")
@@ -52,6 +57,9 @@ jobs:
             # Create the strategy object and add it to the array
             strategy_object="{\"name\": \"Shard $strategy\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
             strategies+=("$strategy_object")
+
+            # Update the start index for the next strategy
+            start_idx=$(( end_idx + 1 ))
           done
 
           # Construct the JSON output with the strategies array
