@@ -17,11 +17,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Debug Feature Folder Contents
-        run: |
-          echo "Checking contents of the feature folder..."
-          ls ${{ inputs.feature_folder }}
-
       - name: Create JSON files
         run: |
           # Get the list of feature files into an array
@@ -87,8 +82,6 @@ jobs:
              folderName="assets/"
              text=${files[i]}
              filteredName=$(echo "$text" | grep -o -P "(?<=${folderName}).*")
-          
-             echo currentFile actual = $text folder-name = $folderName Filtered = $filteredName 
              strategy_files+=("\"${filteredName}\"")
 
            done
