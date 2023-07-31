@@ -4,6 +4,9 @@ name: My CI/CD Workflow
 
 on:
   push:
+    branches:
+      - develop
+      - release/*
   pull_request:
 
 jobs:
@@ -13,15 +16,67 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Use Strategy Job Template
-        uses: ./.github/strategy-job-template.yml
-        with:
-          feature_folder: 'app/src/androidTest/assets/features'
-          device_list: 'Device A, Device B, Device C'
-          project: 'My Test Project'
-          custom_id: ''  # If you leave it empty, the default value (repository name) will be used.
+      - name: Create JSON files
+        run: |
+          json="{"
+
+          # Include the devices block if devices are provided
+          if [ "${{ inputs.device_list }}" != "none" ]; then
+            json+="\"devices\": [${{ inputs.device_list }}], "
+          fi
+
+          # Add additional keys outside the shard block
+          json+="\"project\": \"${{ inputs.project }}\", \"custom_id\": \"${{ inputs.custom_id }}\", "
+
+          # Calculate the number of strategies (5 or 3) based on the total file count
+          total_files=$(find ${{ inputs.feature_folder }} -type f -name "*.feature" | wc -l)
+          if [[ $total_files -gt 10 ]]; then
+            strategies=5
+          elif [[ $total_files -gt 3 ]]; then
+            strategies=3
+          else
+            strategies=1
+          fi
+
+          # Calculate the maximum number of files per strategy
+          max_files_per_strategy=$(( (total_files + strategies - 1) / strategies ))
+
+          # Include the shard block
+          json+="\"strategies\": ["
+
+          shard_counter=1
+          current_files=0
+          for strategy in $(seq 1 $strategies); do
+            json+="{"
+            json+="\"name\": \"Shard $strategy\", "
+            json+="\"strategy\": \"Cucumber\", "
+
+            # Loop through the feature files and append them to the strategy
+            json+="\"values\": {\"features\": ["
+            while IFS= read -r feature_file; do
+              json+="\"$feature_file\","
+              ((current_files++))
+
+              # Check if the current strategy reaches the maximum files per strategy
+              if [[ $current_files -eq $max_files_per_strategy ]]; then
+                break
+              fi
+            done < <(find ${{ inputs.feature_folder }} ! -type d -type f -name "*.feature" -print)
+
+            json="${json::-1}"  # Remove the trailing comma
+            json+="]},"
+            current_files=0
+
+            json+="},"
+          done
+          json="${json::-1}"  # Remove the trailing comma
+
+          json+="]}"  # Close the strategies block
+
+          # Save JSON to a file named config.json in the .github folder
+          echo "$json" > .github/config.json
 
       - name: Show Config JSON
         run: cat .github/config.json
