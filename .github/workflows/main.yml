@@ -4,9 +4,7 @@ name: My CI/CD Workflow
 
 on:
   push:
-    branches:
-      - develop
-      - release/*
+
   pull_request:
 
 jobs:
