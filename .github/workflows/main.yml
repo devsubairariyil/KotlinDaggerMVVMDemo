@@ -44,26 +44,43 @@ jobs:
           # Increment max_files_per_strategy by 1 if the remainder is greater than 0
           max_files_per_strategy=$(( files_per_strategy + (remaining_files > 0 ? 1 : 0) ))
 
-          # Loop through the strategies and add each strategy object to the array
-          start_idx=1
-          for strategy in $(seq 1 $strategies); do
-            # Calculate the end index for this strategy
-            end_idx=$(( start_idx + max_files_per_strategy - 1 + (strategy <= remaining_files ? 1 : 0) ))
+          # Initialize the strategy and current files list
+          current_strategy=1
+          current_files=()
 
-            # Get the feature files for this strategy
-            feature_files=($(find ${{ inputs.feature_folder }} -type f -name "*.feature" | head -n $end_idx | tail -n +$start_idx))
+          # Loop through the files and create strategies accordingly
+          for file in $(find ${{ inputs.feature_folder }} -type f -name "*.feature"); do
+            # Add the file to the current strategy's files list
+            current_files+=("$file")
 
-            # Convert feature_files array to a comma-separated string
-            files_string=$(printf "\"%s\"," "${feature_files[@]}")
+            # Check if it's time to create a new strategy
+            if [[ ${#current_files[@]} -eq $max_files_per_strategy ]]; then
+              # Convert current_files array to a comma-separated string
+              files_string=$(printf "\"%s\"," "${current_files[@]}")
+              files_string=${files_string%,}  # Remove the trailing comma
+
+              # Create the strategy object and add it to the array
+              strategy_object="{\"name\": \"Shard $current_strategy\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
+              strategies+=("$strategy_object")
+
+              # Reset the current_files list for the next strategy
+              current_files=()
+
+              # Increment the current strategy index
+              current_strategy=$(( current_strategy + 1 ))
+            fi
+          done
+
+          # Handle any remaining files for the last strategy
+          if [[ ${#current_files[@]} -gt 0 ]]; then
+            # Convert current_files array to a comma-separated string
+            files_string=$(printf "\"%s\"," "${current_files[@]}")
             files_string=${files_string%,}  # Remove the trailing comma
 
-            # Create the strategy object and add it to the array
-            strategy_object="{\"name\": \"Shard $strategy\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
+            # Create the strategy object for the last strategy and add it to the array
+            strategy_object="{\"name\": \"Shard $current_strategy\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
             strategies+=("$strategy_object")
-
-            # Update the start index for the next strategy
-            start_idx=$(( end_idx + 1 ))
-          done
+          fi
 
           # Construct the JSON output with the strategies array
           json="{"
