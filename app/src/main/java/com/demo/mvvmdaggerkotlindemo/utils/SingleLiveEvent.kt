@@ -33,4 +33,18 @@ class SingleLiveEvent<T> : MutableLiveData<T>(){
     fun call() {
         value = null
     }
+
+    fun test(){
+        val fileList = listOf<String>()
+        val strategy: Strategy? = null
+        val filePerStrategy = computeFilePerStrategy()
+        fileList.forEachIndexed { index, fileName ->
+
+        }
+    }
+
+    private fun computeFilePerStrategy(): Int =0
+}
+class Strategy{
+
 }
