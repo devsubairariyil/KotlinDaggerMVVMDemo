@@ -48,7 +48,7 @@ jobs:
           current_strategy=1
           current_files=()
 
-          # Loop through the files and create strategies accordingly
+          # Loop through the files and create strategies using Round Robin logic
           for file in $(find ${{ inputs.feature_folder }} -type f -name "*.feature"); do
             # Add the file to the current strategy's files list
             current_files+=("$file")
@@ -66,8 +66,8 @@ jobs:
               # Reset the current_files list for the next strategy
               current_files=()
 
-              # Increment the current strategy index
-              current_strategy=$(( current_strategy + 1 ))
+              # Increment the current strategy index using Round Robin
+              current_strategy=$(( (current_strategy % strategies) + 1 ))
             fi
           done
 
@@ -93,7 +93,9 @@ jobs:
           fi
 
           # Add additional keys outside the shard block
-          json+="\"project\": \"${{ inputs.project }}\", \"custom_id\": \"${{ inputs.custom_id }}\", "
+          json+="\"project\": \"${{ inputs.project }}\", "
+          json+="\"custom_id\": \"${{ inputs.custom_id }}\", "
+          json+="\"locale\": \"en-GB\", "
 
           json+="\"mapping\": $(
             echo "${strategies[@]}" | jq -s '.'  # Convert strategies array to JSON
