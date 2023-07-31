@@ -92,7 +92,7 @@ jobs:
 
           #Add the last strategy if it has not added items
           echo Strategis available $((strategyCount))/$((strategies))
-          if (( strategyCount < strategies )); then
+          if (( strategyCount <= strategies )); then
              files_string=$(IFS=, ; echo "${strategy_files[*]}")
              strategy_object="{\"name\": \"Shard $((strategyCount))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
              echo new strategy $strategy_object
