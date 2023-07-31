@@ -51,6 +51,7 @@ jobs:
             max_files_per_strategy=$files_per_strategy
           fi
 
+          echo Total File : $total_files
           # Construct the JSON output with the strategies
           json="{"
 
