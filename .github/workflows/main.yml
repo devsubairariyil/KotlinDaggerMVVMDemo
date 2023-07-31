@@ -53,28 +53,25 @@ jobs:
 
           # Create and allocate files to the strategies using Round Robin logic
           strategies_array=()
+          strategy_files=()
 
-          for (( i = 0; i < strategies; i++ )); do
-            strategy_files=()
-            for (( j = i; j < total_files; j += strategies )); do
-              strategy_files+=("\"${files[j]}\"")
-            done
+          for (( i = 0; i < total_files; i++ )); do
+            file="${files[i]}"
+            strategy_files+=("\"${file}\"")
 
-            # If this is the last strategy, add the remaining files to it
-            if (( i == strategies - 1 )); then
-              for (( k = total_files; k < total_files + remaining_files; k++ )); do
-                strategy_files+=("\"${files[k]}\"")
-              done
+            if (( ${#strategy_files[@]} == max_files_per_strategy )) || (( i == total_files - 1 )); then
+              # Join strategy_files array into a comma-separated string
+              files_string=$(IFS=, ; echo "${strategy_files[*]}")
+
+              # Create the strategy object
+              strategy_object="{\"name\": \"Strategy $((strategies - (total_files - 1 - i) / max_files_per_strategy))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
+
+              # Add the strategy object to the strategies_array
+              strategies_array+=("$strategy_object")
+
+              # Reset strategy_files array for the next strategy
+              strategy_files=()
             fi
-
-            # Join strategy_files array into a comma-separated string
-            files_string=$(IFS=, ; echo "${strategy_files[*]}")
-
-            # Create the strategy object
-            strategy_object="{\"name\": \"Strategy $((i+1))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
-
-            # Add the strategy object to the strategies_array
-            strategies_array+=("$strategy_object")
           done
 
           # Construct the JSON output with the strategies_array
