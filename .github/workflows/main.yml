@@ -72,3 +72,29 @@ jobs:
           # Construct the JSON output with the strategies array
           json="{"
 
+          # Include the devices block if devices are provided or use a default value
+          if [ -n "${{ inputs.device_list }}" ]; then
+            json+="\"devices\": [${{ inputs.device_list }}], "
+          else
+            json+="\"devices\": [\"device1\", \"device2\"], "  # Default device list
+          fi
+
+          # Add additional keys outside the shard block
+          json+="\"project\": \"${{ inputs.project }}\", "
+          json+="\"custom_id\": \"${{ inputs.custom_id }}\", "
+          json+="\"locale\": \"en-GB\", "
+
+          json+="\"mapping\": $(
+            echo \"${strategies[@]}\" | jq -s '.'  # Convert strategies array to JSON
+          ), "
+
+          json+="\"numberOfShard\": $strategies, "  # Number of strategies
+          json+="\"deviceSelection\": \"any\""   # Device selection
+
+          json+="}"
+
+          # Save JSON to a file named config.json in the .github folder
+          echo "$json" > .github/config.json
+
+      - name: Show Config JSON
+        run: cat .github/config.json
