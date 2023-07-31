@@ -86,6 +86,7 @@ jobs:
                strategy_files=()
              fi
              echo currentFile ${files[i]#${{ inputs.feature_folder }}}
+             echo folder name: ${{ inputs.feature_folder }}}
              strategy_files+=("\"${files[i]}\"")
 
            done
