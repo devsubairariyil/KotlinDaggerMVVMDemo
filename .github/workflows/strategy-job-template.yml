@@ -27,7 +27,7 @@ inputs:
 
 steps:
   - name: Checkout code
-    uses: actions/checkout@v2
+    uses: actions/checkout@v3
 
   # Create JSON file for strategies
   - name: Create JSON files
