@@ -78,7 +78,7 @@ jobs:
                if (( strategyCount <= strategies )); then
                  json+=", "
                fi
-               strategyCount++
+               ((strategyCount++))
                strategy_files=()
              fi
              strategy_files+=("\"${files[i]}\"")
