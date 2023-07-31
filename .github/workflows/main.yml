@@ -89,6 +89,13 @@ jobs:
 
            done
 
+          #Add the last strategy if it has not added items
+          if [ "${strategy_files[@]}" -gt 0 ]; then
+             files_string=$(IFS=, ; echo "${strategy_files[*]}")
+             strategy_object="{\"name\": \"Shard $((strategyCount))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
+             echo new strategy $strategy_object
+             json+="$strategy_object"
+          fi
           json+="], "
 
           json+="\"numberOfShard\": $strategies, "  # Number of strategies
