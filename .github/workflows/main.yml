@@ -40,7 +40,7 @@ jobs:
             strategies=1
           fi
 
-          # Calculate the number of files for each strategy and the remaining files
+          # Calculate the number of files for each strategy
           files_per_strategy=$(( total_files / strategies ))
           remaining_files=$(( total_files % strategies ))
 
@@ -51,7 +51,32 @@ jobs:
             max_files_per_strategy=$files_per_strategy
           fi
 
-          # Construct the JSON output with the strategies
+          # Create and allocate files to the strategies using Round Robin logic
+          strategies_array=()
+          for (( i = 0; i < strategies; i++ )); do
+            strategy_files=()
+            for (( j = i; j < total_files; j += strategies )); do
+              strategy_files+=("\"${files[j]}\"")
+            done
+
+            # If this is the last strategy, add the remaining files to it
+            if (( i == strategies - 1 )); then
+              for (( k = total_files; k < total_files + remaining_files; k++ )); do
+                strategy_files+=("\"${files[k]}\"")
+              done
+            fi
+
+            # Join strategy_files array into a comma-separated string
+            files_string=$(IFS=, ; echo "${strategy_files[*]}")
+
+            # Create the strategy object
+            strategy_object="{\"name\": \"Shard $((i+1))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
+
+            # Add the strategy object to the strategies_array
+            strategies_array+=("$strategy_object")
+          done
+
+          # Construct the JSON output with the strategies_array
           json="{"
 
           # Include the devices block if devices are provided or use a default value
@@ -66,31 +91,7 @@ jobs:
           json+="\"custom_id\": \"${{ inputs.custom_id }}\", "
           json+="\"locale\": \"en-GB\", "
 
-          json+="\"mapping\": ["
-
-          # Create and allocate files to the strategies using Round Robin logic
-          for (( i = 0; i < strategies; i++ )); do
-            strategy_files=()
-            for (( j = i; j < total_files; j += strategies )); do
-              strategy_files+=("\"${files[j]}\"")
-            done
-
-            # Join strategy_files array into a comma-separated string
-            files_string=$(IFS=, ; echo "${strategy_files[*]}")
-
-            # Create the strategy object
-            strategy_object="{\"name\": \"Shard $((i+1))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
-
-            # Append the strategy object to the JSON output
-            json+="$strategy_object"
-
-            # Add a comma after each strategy except the last one
-            if (( i < strategies - 1 )); then
-              json+=", "
-            fi
-          done
-
-          json+="], "
+          json+="\"mapping\": [${{ join(strategies_array, ',') }}], "
 
           json+="\"numberOfShard\": $strategies, "  # Number of strategies
           json+="\"deviceSelection\": \"any\""   # Device selection
