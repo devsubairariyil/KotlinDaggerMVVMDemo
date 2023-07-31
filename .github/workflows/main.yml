@@ -85,13 +85,13 @@ jobs:
                ((strategyCount++))
                strategy_files=()
              fi
-             echo currentFile ${files[i]}
+             echo currentFile ${files[i]#${{ inputs.feature_folder }}}
              strategy_files+=("\"${files[i]}\"")
 
            done
 
           #Add the last strategy if it has not added items
-          echo Strategis available $((strategyCount))/$((strategies))
+          echo Strategies available $((strategyCount))/$((strategies))
           if (( strategyCount <= strategies )); then
              files_string=$(IFS=, ; echo "${strategy_files[*]}")
              strategy_object="{\"name\": \"Shard $((strategyCount))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
