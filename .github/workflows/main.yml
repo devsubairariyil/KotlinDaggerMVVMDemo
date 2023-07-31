@@ -86,10 +86,10 @@ jobs:
                strategy_files=()
              fi
              
-             substring_to_remove="${{ inputs.feature_folder }}"
+             folderName="${{ inputs.feature_folder }}"
              text=${files[i]}
-             filteredName="${text#"$substring_to_remove"}"
-             echo currentFile $filteredName
+             filteredName="${text#"$folderName"}"
+             echo currentFile actual = $text folder-name = $folderName Filtered = $filteredName 
              strategy_files+=("\"${files[i]}\"")
 
            done
