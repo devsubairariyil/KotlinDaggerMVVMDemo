@@ -32,7 +32,7 @@ jobs:
 
           # Calculate the number of strategies (5 or 3) based on the total file count
           total_files=${#files[@]}
-          if [[ $total_files -gt 10 ]]; then
+          if [[ $total_files -gt 12 ]]; then
             strategies=5
           elif [[ $total_files -gt 3 ]]; then
             strategies=3
@@ -73,7 +73,7 @@ jobs:
           # Create and allocate files to the strategies using Round Robin logic
           strategyCount=1
            for (( i = 0; i < total_files; i++ )); do
-             echo i = $i, is divisible $(i%max_files_per_strategy)
+             echo i = $i, is divisible $((i % max_files_per_strategy))
              if((i%max_files_per_strategy == 0 && i != 0)); then
                files_string=$(IFS=, ; echo "${strategy_files[*]}")
                strategy_object="{\"name\": \"Shard $((strategyCount))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
