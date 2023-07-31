@@ -43,15 +43,9 @@ jobs:
           # Calculate the number of files for each strategy
           files_per_strategy=$(( total_files / strategies ))
           remaining_files=$(( total_files % strategies ))
+          max_files_per_strategy=$(( files_per_strategy + (remaining_files > 0) ))
 
-          # Increment max_files_per_strategy by 1 if the remainder is greater than 0
-          if [[ $remaining_files -gt 0 ]]; then
-            max_files_per_strategy=$(( files_per_strategy + 1 ))
-          else
-            max_files_per_strategy=$files_per_strategy
-          fi
-
-          # Create and allocate files to the strategies using Round Robin logic
+          # Create and allocate files to the strategies
           strategies_array=()
           strategy_files=()
 
@@ -64,7 +58,7 @@ jobs:
               files_string=$(IFS=, ; echo "${strategy_files[*]}")
 
               # Create the strategy object
-              strategy_object="{\"name\": \"Strategy $((strategies - (total_files - 1 - i) / max_files_per_strategy))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
+              strategy_object="{\"name\": \"Strategy $((i / max_files_per_strategy + 1))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
 
               # Add the strategy object to the strategies_array
               strategies_array+=("$strategy_object")
