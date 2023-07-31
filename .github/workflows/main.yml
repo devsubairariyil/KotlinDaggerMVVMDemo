@@ -70,7 +70,7 @@ jobs:
 
           # Create and allocate files to the strategies using Round Robin logic
           strategyCount=1
-           for (( i = 1; i < total_files; i++ )); do
+           for (( i = 0; i < total_files; i++ )); do
              files_string=$(IFS=, ; echo "${strategy_files[*]}")
              if((i%max_files_per_strategy == 0)); then
                strategy_object="{\"name\": \"Shard $((strategyCount))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
