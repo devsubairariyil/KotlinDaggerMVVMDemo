@@ -52,6 +52,7 @@ jobs:
           fi
 
           echo Total File : $total_files
+          echo Files Per Strategy : $max_files_per_strategy
           # Construct the JSON output with the strategies
           json="{"
 
@@ -72,7 +73,7 @@ jobs:
           # Create and allocate files to the strategies using Round Robin logic
           strategyCount=1
            for (( i = 0; i < total_files; i++ )); do
-             
+             echo i = $i, is divisible $(i%max_files_per_strategy)
              if((i%max_files_per_strategy == 0 && i != 0)); then
                files_string=$(IFS=, ; echo "${strategy_files[*]}")
                strategy_object="{\"name\": \"Shard $((strategyCount))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
