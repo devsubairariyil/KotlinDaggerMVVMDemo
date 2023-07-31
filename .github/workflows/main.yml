@@ -80,7 +80,7 @@ jobs:
                fi
                strategyCount+=1
              fi
-             strategy_files+=("\"${files[j]}\"")
+             strategy_files+=("\"${files[i]}\"")
 
            done
 
