@@ -75,6 +75,7 @@ jobs:
              if((i%max_files_per_strategy == 0 && i != 0)); then
                files_string=$(IFS=, ; echo "${strategy_files[*]}")
                strategy_object="{\"name\": \"Shard $((strategyCount))\", \"strategy\": \"Cucumber\", \"values\": {\"features\": [$files_string]}}"
+               echo new strategy $strategy_object
                json+="$strategy_object"
                if (( strategyCount <= strategies )); then
                  json+=", "
@@ -82,7 +83,7 @@ jobs:
                ((strategyCount++))
                strategy_files=()
              fi
-          
+             echo currentFile ${files[i]}
              strategy_files+=("\"${files[i]}\"")
 
            done
