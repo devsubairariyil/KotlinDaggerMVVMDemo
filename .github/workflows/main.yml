@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Use Strategy Job Template
-        uses: ./.github/workflows/strategy-job-template.yml
+        uses: ./.github/strategy-job-template.yml
         with:
           feature_folder: 'app/src/androidTest/assets/features'
           device_list: 'Device A, Device B, Device C'
