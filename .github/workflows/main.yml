@@ -86,7 +86,7 @@ jobs:
                strategy_files=()
              fi
              
-             folderName=${{ inputs.feature_folder }}
+             folderName="features"
              text=${files[i]}
              filteredName="${text#"$folderName"}"
              echo currentFile actual = $text folder-name = $folderName Filtered = $filteredName 
