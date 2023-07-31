@@ -1,0 +1,27 @@
+# .github/workflows/main.yml
+
+name: My CI/CD Workflow
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  strategy_job:
+    name: Create Strategy Config
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Strategy Job Template
+        uses: ./.github/strategy-job-template.yml
+        with:
+          feature_folder: 'app/src/androidTest/assets/features'
+          device_list: 'Device A, Device B, Device C'
+          project: 'My Test Project'
+          custom_id: ''  # If you leave it empty, the default value (repository name) will be used.
+
+      - name: Show Config JSON
+        run: cat .github/config.json
