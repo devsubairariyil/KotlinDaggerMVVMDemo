@@ -81,7 +81,15 @@ function scanFeaturesAndDivide(featureFolder) {
       features: allFeatureFiles.slice(startIndex, endIndex),
     };
   });
-  console.log(`Json Blocks:  ${JSON.stringify(blocksArray)}`)
+  const configJson = {
+   devices: process.env.INPUT_DEVICE_LIST,
+   shards:{
+     numberOfShards:  blocksArray.length,
+     deviceSelection: "any",
+     mapping: blocksArray
+   }
+  }
+  console.log(`Json Blocks:  ${JSON.stringify(configJson)}`)
   return blocksArray;
 }
 
