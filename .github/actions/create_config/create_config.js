@@ -93,7 +93,7 @@ async function run() {
     const result = scanFeaturesAndDivide(featureFolder);
     console.log(result)
     // Set the outputs for other steps to use
-    process.stdout.write(::set-output name=config_json::${JSON.stringify(result)});
+    process.stdout.write(`::set-output name=config_json::${JSON.stringify(result)}`);
 
   } catch (error) {
     console.error(error);
