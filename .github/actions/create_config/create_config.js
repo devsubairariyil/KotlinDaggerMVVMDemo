@@ -29,9 +29,48 @@ function scanFeaturesAndDivide(featureFolder) {
   const blocks = Math.min(Math.ceil(totalFiles / 5), 5); // Number of blocks should be 5 at most
   const filesPerBlock = Math.ceil(totalFiles / blocks);
 
+// Calculate the remainder
+  const remainder = totalFiles % blocks;
+
+  // If there is a remainder, add 1 to filesPerBlock
+  if (remainder > 0) {
+    filesPerBlock++;
+  }
+
   process.stdout.write(`::set-output name=blocks::${blocks}\n`);
   process.stdout.write(`::set-output name=filesPerBlock::${filesPerBlock}\n`);
 
+   const shards = []
+   let fileListForShard = [];
+   let shardCounter = 1
+   allFeatureFiles.forEach((file, index) => {
+     if(index % filesPerBlock == 0 && i > 0){
+        let strategy = {
+          name: "Shard - "+ shardCounter,
+          strategy: "cucumberOptions",
+          values: {
+            tags: "tag",
+            features: fileListForShard
+          }
+        };
+        shards.push(strategy)
+        shardCounter++
+        fileListForShard = []
+     }
+     fileListForShard.push(file)
+   });
+
+   if(shardCounter <= blocks){
+     let strategy = {
+             name: "Shard - "+ shardCounter,
+             strategy: "cucumberOptions",
+             values: {
+               tags: "tag",
+               features: fileListForShard
+             }
+           };
+           shards.push(strategy)
+   }
   // Divide files into blocks
   const blocksArray = new Array(blocks).fill().map((_, index) => {
     const startIndex = index * filesPerBlock;
@@ -42,7 +81,7 @@ function scanFeaturesAndDivide(featureFolder) {
     };
   });
 
-  return blocksArray;
+  return shards;
 }
 
 async function run() {
