@@ -27,52 +27,22 @@ function scanFeaturesAndDivide(featureFolder) {
   const allFeatureFiles = findFeatureFiles(featureFolder);
   const totalFiles = allFeatureFiles.length;
   let blocks = Math.min(Math.ceil(totalFiles / 5), 5); // Number of blocks should be 5 at most
+  if (fileLength >= 15) {
+      return 5;
+  } else if (fileLength >= 10) {
+      return 3;
+  } else if (fileLength >= 6) {
+      return 2;
+  } else{
+      return 1;
+  }
+
   let filesPerBlock = Math.ceil(totalFiles / blocks);
-
-// Calculate the remainder
-  const remainder = totalFiles % blocks;
-
-  // If there is a remainder, add 1 to filesPerBlock
-  //if (remainder > 0) {
-    //filesPerBlock++;
-  //}
 
   process.stdout.write(`::set-output name=blocks::${blocks}\n`);
   process.stdout.write(`::set-output name=filesPerBlock::${filesPerBlock}\n`);
   process.stdout.write(`::set-output name=totalFiles::${totalFiles}\n`);
 
-   const shards = []
-   let fileListForShard = [];
-   let shardCounter = 1
-   allFeatureFiles.forEach((file, index) => {
-     if(index % filesPerBlock == 0 && index > 0){
-        let strategy = {
-          name: "Shard - "+ shardCounter,
-          strategy: "cucumberOptions",
-          values: {
-            tags: "tag",
-            features: fileListForShard
-          }
-        };
-        shards.push(strategy)
-        shardCounter++
-        fileListForShard = []
-     }
-     fileListForShard.push(file)
-   });
-
-   if(shardCounter <= blocks){
-     let strategy = {
-             name: "Shard - "+ shardCounter,
-             strategy: "cucumberOptions",
-             values: {
-               tags: "tag",
-               features: fileListForShard
-             }
-           };
-           shards.push(strategy)
-   }
-  // Divide files into blocks
   const blocksArray = new Array(blocks).fill().map((_, index) => {
     const startIndex = index * filesPerBlock;
     const endIndex = Math.min((index + 1) * filesPerBlock, totalFiles);
@@ -83,6 +53,9 @@ function scanFeaturesAndDivide(featureFolder) {
   });
   const configJson = {
    devices: process.env.INPUT_DEVICE_LIST,
+   project: process.env.INPUT_PROJECT,
+   custom_id: process.env.INPUT_CUSTOM_ID,
+   locale: "en-GB",
    shards:{
      numberOfShards:  blocksArray.length,
      deviceSelection: "any",

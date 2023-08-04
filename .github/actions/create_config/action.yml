@@ -7,12 +7,15 @@ inputs:
     required: true
   project_name:
     description: 'The name of the project'
-    required: true
+    required: false
   device_list:
     description: 'A list of devices'
     required: true
   tag_name:
     description: 'The tag name'
+    required: true
+  custom_id:
+    description: 'Custom ID'
     required: true
 
 runs:

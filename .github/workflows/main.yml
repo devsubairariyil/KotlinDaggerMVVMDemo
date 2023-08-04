@@ -22,9 +22,10 @@ jobs:
         uses: ./.github/actions/create_config
         with:
           feature_folder: 'app/src/androidTest/assets/features'
-          project_name: 'Your_Project'
+          project_name: ${{ github.repository }}
           device_list: '["device1","device2","device3"]'
           tag_name: 'v1.0'
+          custom_id: 'Sample Custom ID'
 
       - name: Verify
         run: |
