@@ -33,9 +33,9 @@ function scanFeaturesAndDivide(featureFolder) {
   const remainder = totalFiles % blocks;
 
   // If there is a remainder, add 1 to filesPerBlock
-  if (remainder > 0) {
-    filesPerBlock++;
-  }
+  //if (remainder > 0) {
+    //filesPerBlock++;
+  //}
 
   process.stdout.write(`::set-output name=blocks::${blocks}\n`);
   process.stdout.write(`::set-output name=filesPerBlock::${filesPerBlock}\n`);
