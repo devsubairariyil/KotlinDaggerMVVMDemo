@@ -26,15 +26,15 @@ function scanFeaturesAndDivide(featureFolder) {
 
   const allFeatureFiles = findFeatureFiles(featureFolder);
   const totalFiles = allFeatureFiles.length;
-  let blocks = Math.min(Math.ceil(totalFiles / 5), 5); // Number of blocks should be 5 at most
-  if (fileLength >= 15) {
-      return 5;
-  } else if (fileLength >= 10) {
-      return 3;
-  } else if (fileLength >= 6) {
-      return 2;
+  let blocks = Math.min(Math.ceil(totalFiles / 5), 5);
+  if (totalFiles >= 15) {
+      blocks = 5;
+  } else if (totalFiles >= 10) {
+      blocks = 3;
+  } else if (totalFiles >= 6) {
+      blocks = 2;
   } else{
-      return 1;
+      blocks = 1;
   }
 
   let filesPerBlock = Math.ceil(totalFiles / blocks);
