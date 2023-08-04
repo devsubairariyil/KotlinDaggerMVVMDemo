@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Use the Feature Scanner action
-        uses: ./.github/actions/feature_scanner
+        uses: ./.github/actions/create_config
         with:
           feature_folder: 'app/src/androidTest/assets/features'
           project_name: 'Your_Project'
