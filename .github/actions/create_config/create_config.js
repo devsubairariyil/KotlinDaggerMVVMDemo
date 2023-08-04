@@ -82,7 +82,7 @@ function scanFeaturesAndDivide(featureFolder) {
     };
   });
   console.log(`Json Blocks:  ${JSON.stringify(blocksArray)}`)
-  return shards;
+  return blocksArray;
 }
 
 async function run() {
