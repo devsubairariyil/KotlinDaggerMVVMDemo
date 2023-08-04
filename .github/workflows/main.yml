@@ -28,6 +28,6 @@ jobs:
 
       - name: Verify
         run: |
-          echo {{ steps.config.outputs.blocks }}
+          echo ${{ steps.config.outputs.blocks }}
 
 
