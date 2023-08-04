@@ -18,10 +18,12 @@ runs:
   using: 'composite'
   steps:
     - name: Check out code
+      shell: bash
       uses: actions/checkout@v2
 
     - name: Create Config
       id: scan-features
+      shell: bash
       run: |
         # Your script here to scan features and calculate blocks and files per block
         # You can use any scripting language you prefer (e.g., bash, Python, Node.js)
@@ -111,6 +113,7 @@ runs:
           # Save JSON to a file named config.json in the .github folder
           echo "$json" > .github/config.json
     - name: Use the output from previous step
+      shell: bash
       run: |
         echo "Number of blocks: ${{ steps.scan-features.outputs.blocks }}"
         echo "Files per block: ${{ steps.scan-features.outputs.files_per_block }}"
