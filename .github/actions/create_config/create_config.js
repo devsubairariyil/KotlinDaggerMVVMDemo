@@ -26,8 +26,8 @@ function scanFeaturesAndDivide(featureFolder) {
 
   const allFeatureFiles = findFeatureFiles(featureFolder);
   const totalFiles = allFeatureFiles.length;
-  const blocks = Math.min(Math.ceil(totalFiles / 5), 5); // Number of blocks should be 5 at most
-  const filesPerBlock = Math.ceil(totalFiles / blocks);
+  let blocks = Math.min(Math.ceil(totalFiles / 5), 5); // Number of blocks should be 5 at most
+  let filesPerBlock = Math.ceil(totalFiles / blocks);
 
 // Calculate the remainder
   const remainder = totalFiles % blocks;
