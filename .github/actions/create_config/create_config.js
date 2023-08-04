@@ -29,6 +29,9 @@ function scanFeaturesAndDivide(featureFolder) {
   const blocks = Math.min(Math.ceil(totalFiles / 5), 5); // Number of blocks should be 5 at most
   const filesPerBlock = Math.ceil(totalFiles / blocks);
 
+  process.stdout.write(`::set-output name=blocks::${blocks}\n`);
+  process.stdout.write(`::set-output name=filesPerBlock::${filesPerBlock}\n`);
+
   // Divide files into blocks
   const blocksArray = new Array(blocks).fill().map((_, index) => {
     const startIndex = index * filesPerBlock;
@@ -51,8 +54,7 @@ async function run() {
 
     // Set the outputs for other steps to use
     process.stdout.write(`::set-output name=config_json::${JSON.stringify(result)}\n`);
-    process.stdout.write(`::set-output name=blocks::${blocks}\n`);
-    process.stdout.write(`::set-output name=filesPerBlock::${filesPerBlock}\n`);
+
   } catch (error) {
     console.error(error);
     process.exit(1);
