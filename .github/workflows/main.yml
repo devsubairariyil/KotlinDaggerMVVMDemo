@@ -18,11 +18,16 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Use the Feature Scanner action
+        id: config
         uses: ./.github/actions/create_config
         with:
           feature_folder: 'app/src/androidTest/assets/features'
           project_name: 'Your_Project'
           device_list: 'device1,device2,device3'
           tag_name: 'v1.0'
+
+      - name: Verify
+        run: |
+          echo {{ steps.config.outputs.blocks }}
 
 

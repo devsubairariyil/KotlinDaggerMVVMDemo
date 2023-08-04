@@ -19,6 +19,8 @@ async function run() {
     const { blocks, filesPerBlock } = scanFeaturesAndDivide(featureFolder);
 
     // Set the outputs for other steps to use
+    console.log(`blocks=${blocks}`);
+    console.log(`files_per_block=${filesPerBlock}`);
     console.log(`::set-output name=blocks::${blocks}`);
     console.log(`::set-output name=files_per_block::${filesPerBlock}`);
   } catch (error) {
