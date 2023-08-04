@@ -81,7 +81,7 @@ function scanFeaturesAndDivide(featureFolder) {
       features: allFeatureFiles.slice(startIndex, endIndex),
     };
   });
-
+  console.log("Json Blocks: "+ JSON.stringify(blocksArray))
   return shards;
 }
 
@@ -91,9 +91,9 @@ async function run() {
 
     // Call the function to scan features, divide them into blocks, and get the result
     const result = scanFeaturesAndDivide(featureFolder);
-
+    console.log(result)
     // Set the outputs for other steps to use
-    process.stdout.write(`::set-output name=config_json::${JSON.stringify(result)}\n`);
+    process.stdout.write(::set-output name=config_json::${JSON.stringify(result)});
 
   } catch (error) {
     console.error(error);
