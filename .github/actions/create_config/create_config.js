@@ -81,7 +81,7 @@ function scanFeaturesAndDivide(featureFolder) {
       features: allFeatureFiles.slice(startIndex, endIndex),
     };
   });
-  console.log("Json Blocks: "+ JSON.stringify(blocksArray))
+  console.log(`Json Blocks:  ${JSON.stringify(blocksArray)}`)
   return shards;
 }
 
