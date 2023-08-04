@@ -90,7 +90,7 @@ function scanFeaturesAndDivide(featureFolder) {
    }
   }
   console.log(`Json Blocks:  ${JSON.stringify(configJson)}`)
-  return blocksArray;
+  return configJson;
 }
 
 async function run() {
