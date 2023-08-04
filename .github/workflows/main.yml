@@ -28,6 +28,7 @@ jobs:
 
       - name: Verify
         run: |
-          echo ${{ steps.config.outputs.blocks }}
+          
+          echo Config: ${{ steps.config.outputs.config_json }}
 
 
