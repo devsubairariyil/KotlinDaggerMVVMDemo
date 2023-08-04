@@ -39,6 +39,7 @@ function scanFeaturesAndDivide(featureFolder) {
 
   process.stdout.write(`::set-output name=blocks::${blocks}\n`);
   process.stdout.write(`::set-output name=filesPerBlock::${filesPerBlock}\n`);
+  process.stdout.write(`::set-output name=totalFiles::${totalFiles}\n`);
 
    const shards = []
    let fileListForShard = [];
