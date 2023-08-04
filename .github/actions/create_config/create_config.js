@@ -51,6 +51,8 @@ async function run() {
 
     // Set the outputs for other steps to use
     process.stdout.write(`::set-output name=config_json::${JSON.stringify(result)}\n`);
+    process.stdout.write(`::set-output name=blocks::${blocks}\n`);
+    process.stdout.write(`::set-output name=filesPerBlock::${filesPerBlock}\n`);
   } catch (error) {
     console.error(error);
     process.exit(1);

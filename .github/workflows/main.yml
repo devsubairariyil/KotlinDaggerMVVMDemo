@@ -28,7 +28,8 @@ jobs:
 
       - name: Verify
         run: |
-          
+          echo No of Blocks: ${{ steps.config.outputs.blocks }}
+          echo File Per Block: ${{ steps.config.outputs.filesPerBlock }}
           echo Config: ${{ steps.config.outputs.config_json }}
 
 
