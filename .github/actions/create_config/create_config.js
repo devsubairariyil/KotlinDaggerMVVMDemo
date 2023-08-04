@@ -44,7 +44,7 @@ function scanFeaturesAndDivide(featureFolder) {
    let fileListForShard = [];
    let shardCounter = 1
    allFeatureFiles.forEach((file, index) => {
-     if(index % filesPerBlock == 0 && i > 0){
+     if(index % filesPerBlock == 0 && index > 0){
         let strategy = {
           name: "Shard - "+ shardCounter,
           strategy: "cucumberOptions",
