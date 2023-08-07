@@ -33,5 +33,14 @@ jobs:
           echo No of Blocks: ${{ steps.config.outputs.blocks }}
           echo File Per Block: ${{ steps.config.outputs.filesPerBlock }}
           echo Config: ${{ steps.config.outputs.config_json }}
+          echo ${{ steps.config.outputs.config_json }} > config.txt
+
+      - name: Publish Config
+        uses: actions/upload-artifact@v3
+        with:
+          name: Config File
+          path: ./config.txt
+
+
 
 
