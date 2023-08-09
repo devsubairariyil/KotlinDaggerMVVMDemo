@@ -29,7 +29,7 @@ jobs:
                 SECRET_TEXT=${{ env.SECRET_TEXT }}
                 
                 # Encrypt using AES-256-CBC and a passphrase
-                ENCRYPTED_SECRET=$(echo -n "$SECRET_TEXT" | openssl enc -aes-256-cbc -e -base64 -pass pass:yourpassphrase)
+                ENCRYPTED_SECRET=$(echo -n '$SECRET_TEXT' | openssl enc -aes-256-cbc -e -base64 -pass pass:yourpassphrase)
                 echo "ENCRYPTED_SECRET=$ENCRYPTED_SECRET" >> $GITHUB_ENV
 
       - name: Show encrypted secret
