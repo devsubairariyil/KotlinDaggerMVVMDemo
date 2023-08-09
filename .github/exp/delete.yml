@@ -1,0 +1,19 @@
+jobs:
+  delete_artifacts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up code
+        uses: actions/checkout@v2
+
+      - name: Delete Artifacts
+        run: |
+          # Use GitHub API to delete artifacts (replace placeholders with actual values)
+          OWNER=<owner>
+          REPO=<repo>
+          TOKEN=$GITHUB_TOKEN
+          RUN_ID=<run-id>
+          ARTIFACT_NAME=<artifact-name>
+          
+          curl -X DELETE -H "Authorization: Bearer $TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/actions/runs/$RUN_ID/artifacts?artifact_name=$ARTIFACT_NAME"
