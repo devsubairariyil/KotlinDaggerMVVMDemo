@@ -1,17 +1,29 @@
+# .github/workflows/main.yml
+
+name: My CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - '*' # Run on every push to any branch
+  pull_request:
+
 jobs:
-  encrypt_secret:
+  strategy_job:
+    name: Create Strategy Config
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up code
-        uses: actions/checkout@v2
-
       - name: Encrypt secret using OpenSSL
         id: encrypt
         run: |
-          # Encrypt using AES-256-CBC and a passphrase
-          ENCRYPTED_SECRET=$(echo -n "Secret data" | openssl enc -aes-256-cbc -e -base64 -pass pass:yourpassphrase)
-          echo "ENCRYPTED_SECRET=$ENCRYPTED_SECRET" >> $GITHUB_ENV
+            # Encrypt using AES-256-CBC and a passphrase
+            ENCRYPTED_SECRET=$(echo -n "Secret data" | openssl enc -aes-256-cbc -e -base64 -pass pass:yourpassphrase)
+            echo "ENCRYPTED_SECRET=$ENCRYPTED_SECRET" >> $GITHUB_ENV
 
       - name: Show encrypted secret
         run: echo $ENCRYPTED_SECRET
+
+
+
+
