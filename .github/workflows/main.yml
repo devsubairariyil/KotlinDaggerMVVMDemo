@@ -1,46 +1,17 @@
-# .github/workflows/main.yml
-
-name: My CI/CD Workflow
-
-on:
-  push:
-    branches:
-      - '*' # Run on every push to any branch
-  pull_request:
-
 jobs:
-  strategy_job:
-    name: Create Strategy Config
+  encrypt_secret:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Set up code
         uses: actions/checkout@v2
 
-      - name: Use the Feature Scanner action
-        id: config
-        uses: ./.github/actions/create_config
-        with:
-          feature_folder: 'app/src/androidTest/assets/features'
-          project_name: ${{ github.repository }}
-          device_list: '["device1","device2","device3"]'
-          tag_name: 'v1.0'
-          custom_id: 'Sample Custom ID'
-
-      - name: Verify
+      - name: Encrypt secret using OpenSSL
+        id: encrypt
         run: |
-          echo Total Files: ${{ steps.config.outputs.totalFiles }}
-          echo No of Blocks: ${{ steps.config.outputs.blocks }}
-          echo File Per Block: ${{ steps.config.outputs.filesPerBlock }}
-          echo Config: ${{ steps.config.outputs.config_json }}
-          echo ${{ steps.config.outputs.config_json }} > config.txt
+          # Encrypt using AES-256-CBC and a passphrase
+          ENCRYPTED_SECRET=$(echo -n "Secret data" | openssl enc -aes-256-cbc -e -base64 -pass pass:yourpassphrase)
+          echo "ENCRYPTED_SECRET=$ENCRYPTED_SECRET" >> $GITHUB_ENV
 
-      - name: Publish Config
-        uses: actions/upload-artifact@v3
-        with:
-          name: Config File
-          path: ./config.txt
-
-
-
-
+      - name: Show encrypted secret
+        run: echo $ENCRYPTED_SECRET
