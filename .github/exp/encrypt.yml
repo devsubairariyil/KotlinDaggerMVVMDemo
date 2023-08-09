@@ -1,0 +1,18 @@
+jobs:
+  encrypt_secret:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up code
+        uses: actions/checkout@v2
+
+      - name: Encrypt secret using OpenSSL
+        run: |
+          # Encrypt using AES-256-CBC and a passphrase
+          echo -n "Secret data" | openssl enc -aes-256-cbc -e -base64 -pass pass:yourpassphrase > encrypted.txt
+
+      - name: Upload encrypted secret
+        uses: actions/upload-artifact@v2
+        with:
+          name: encrypted-secret
+          path: encrypted.txt
