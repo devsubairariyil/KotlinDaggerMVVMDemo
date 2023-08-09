@@ -14,30 +14,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set up code
-      uses: actions/checkout@v2
+      - name: Set up code
+        uses: actions/checkout@v2
 
-    - name: Set secret text to variable
-      run: echo "SECRET_TEXT=Secret data" >> $GITHUB_ENV
+      - name: Encrypt secret using OpenSSL
+        id: encrypt
+        run: |
+          SECRET_TEXT="Secret data"
+          ENCRYPTED_SECRET=$(echo -n "$SECRET_TEXT" | openssl enc -aes-256-cbc -e -base64 -pass pass:yourpassphrase)
+          echo "ENCRYPTED_SECRET=$ENCRYPTED_SECRET" >> $GITHUB_ENV
 
-    - name: Encode secret text to Base64
-      id: encode_base64
-      run: |
-        SECRET_TEXT=${{ env.SECRET_TEXT }}
-        ENCODED_SECRET=$(echo -n "$SECRET_TEXT" | base64)
-        echo "ENCODED_SECRET=$ENCODED_SECRET" >> $GITHUB_ENV
+      - name: Show encrypted secret
+        run: echo $ENCRYPTED_SECRET
 
-    - name: Encrypt secret using OpenSSL
-      id: encrypt
-      run: |
-        ENCODED_SECRET=${{ env.ENCODED_SECRET }}
-        
-        # Encrypt using AES-256-CBC and a passphrase
-        ENCRYPTED_SECRET=$(echo -n "$ENCODED_SECRET" | openssl enc -aes-256-cbc -e -base64 -pass pass:yourpassphrase)
-        echo "ENCRYPTED_SECRET=$ENCRYPTED_SECRET" >> $GITHUB_ENV
-
-    - name: Show encrypted secret
-      run: echo $ENCRYPTED_SECRET
 
 
 
