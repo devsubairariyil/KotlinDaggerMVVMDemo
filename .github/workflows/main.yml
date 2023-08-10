@@ -20,4 +20,4 @@ jobs:
     name: Demo
     uses: ./.github/workflows/test.yml
     with:
-      input_text: 'Hello from Main Workflow'
+      input_text: ${{ vars.FILE_PATH }}

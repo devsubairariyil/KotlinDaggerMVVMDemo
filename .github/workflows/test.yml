@@ -12,7 +12,7 @@ on:
 
 jobs:
   print_input_text:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Print Input Text
