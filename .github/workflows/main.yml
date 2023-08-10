@@ -36,5 +36,6 @@ jobs:
           REPO=${{ github.repository }}
           TOKEN=${{ secrets.GITHUB_TOKEN }}
           
-          curl -X DELETE -H "Authorization: Bearer $TOKEN" \
-            "https://api.github.com/repos/$OWNER/$REPO/actions/runs/$RUN_ID/artifacts"
+          curl -X "POST" -H "Authorization: Bearer $TOKEN" \
+          "https://api.github.com/repos/$OWNER/$REPO/actions/runs/$RUN_ID/artifacts" \
+          -d "{}"
