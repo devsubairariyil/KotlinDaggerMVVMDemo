@@ -1,33 +1,40 @@
-# .github/workflows/main.yml
-
-name: My CI/CD Workflow
+name: Upload and Cleanup Artifacts
 
 on:
   push:
-    branches:
-      - '*' # Run on every push to any branch
-  pull_request:
+
 
 jobs:
-  strategy_job:
-    name: Create Strategy Config
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up code
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Encrypt secret using OpenSSL
-        id: encrypt
+      - name: Create test.txt
+        run: echo "This is a test file." > test.txt
+
+      - name: Upload test.txt as an artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: my-artifact
+          path: test.txt
+
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Delete Artifacts
         run: |
-          SECRET_TEXT="Secret data"
-          ENCRYPTED_SECRET=$(echo -n "$SECRET_TEXT" | openssl enc -aes-256-cbc -e -base64 -pass pass:yourpassphrase)
-          echo "ENCRYPTED_SECRET=$ENCRYPTED_SECRET" >> $GITHUB_ENV
-
-      - name: Show encrypted secret
-        run: echo $ENCRYPTED_SECRET
-
-
-
-
-
+          # Use GitHub API to delete artifacts
+          RUN_ID=${{ github.run_id }}
+          OWNER=${{ github.repository_owner }}
+          REPO=${{ github.repository }}
+          TOKEN=${{ secrets.GITHUB_TOKEN }}
+          
+          curl -X DELETE -H "Authorization: Bearer $TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/actions/runs/$RUN_ID/artifacts"
