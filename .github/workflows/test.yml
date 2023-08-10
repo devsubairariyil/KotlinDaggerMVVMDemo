@@ -1,0 +1,22 @@
+# .github/workflows/print-input.yml
+name: Print Input Text
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  print_input_text:
+    runs-on: macos-latest
+
+    inputs:
+      input_text:
+        description: 'The text to be printed'
+        type: string
+        required: true
+
+    steps:
+      - name: Print Input Text
+        run: |
+          echo "Input Text: ${{ inputs.input_text }}"
+          echo "::set-output name=output_text::${{ inputs.input_text }}"

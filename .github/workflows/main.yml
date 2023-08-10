@@ -12,33 +12,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Create test.txt
-        run: |
-          echo "This is a test file." > test.txt
-          echo vars.TEST_FLAG - ${{ vars.TEST_FLAG }}
-          echo env.TEST_FLAG - $TEST_FLAG
+      - name: Print Repo Variable
+        run: echo variable - ${{ vars.FILE_PATH }}
 
-      - name: Upload test.txt as an artifact
-        uses: actions/upload-artifact@v2
+      - name: Run Print Input Template
+        uses: ./.github/workflows/test.yml
         with:
-          name: my-artifact
-          path: ${{ vars.FILE_PATH }}
+          input_text: 'Hello from Main Workflow'
 
-  cleanup:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Delete Artifacts
-        run: |
-          # Use GitHub API to delete artifacts
-          RUN_ID=${{ github.run_id }}
-          OWNER=${{ github.repository_owner }}
-          REPO=${{ github.repository }}
-          TOKEN=${{ secrets.GITHUB_TOKEN }}
-          
-          curl -X "POST" -H "Authorization: Bearer $TOKEN" \
-          "https://api.github.com/repos/$OWNER/$REPO/actions/runs/$RUN_ID/artifacts" \
-          -d "{}"
