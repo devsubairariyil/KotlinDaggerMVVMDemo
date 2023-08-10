@@ -3,17 +3,16 @@ name: Print Input Text
 
 on:
   workflow_call:
-
-
-jobs:
-  print_input_text:
-    runs-on: macos-latest
-
     inputs:
       input_text:
         description: 'The text to be printed'
         type: string
         required: true
+
+
+jobs:
+  print_input_text:
+    runs-on: macos-latest
 
     steps:
       - name: Print Input Text
