@@ -2,7 +2,7 @@
 name: Print Input Text
 
 on:
-  workflow_dispatch:
+  workflow_call:
 
 
 jobs:
