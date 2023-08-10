@@ -15,8 +15,9 @@ jobs:
       - name: Print Repo Variable
         run: echo variable - ${{ vars.FILE_PATH }}
 
-      - name: Run Print Input Template
-        uses: ./.github/workflows/test.yml
-        with:
-          input_text: 'Hello from Main Workflow'
 
+  demo:
+    name: Demo
+    uses: ./.github/workflows/test.yml
+    with:
+      input_text: 'Hello from Main Workflow'
