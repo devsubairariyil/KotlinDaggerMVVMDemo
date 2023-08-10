@@ -22,7 +22,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: my-artifact
-          path: test.txt
+          path: ${{ vars.FILE_PATH }}
 
   cleanup:
     runs-on: ubuntu-latest
