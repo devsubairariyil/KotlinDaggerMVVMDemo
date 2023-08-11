@@ -14,7 +14,15 @@ jobs:
          else
            echo "Task not started."
          fi       
-
+      - name: Split Modules
+        id: set_modules
+        run: |
+          MODULES=(${{ steps.unit_tests.outputs.modules_split }})
+          ARTIFACT_PATHS=""
+          for module in "${MODULES[@]}"; do
+            ARTIFACT_PATHS+=" ${module}/build/test/reports"
+          done
+          echo "::set-output name=artifact_paths::${ARTIFACT_PATHS}"
       - name: Encrypt secret using OpenSSL
         id: encrypt
         run: |
