@@ -6,6 +6,15 @@ jobs:
       - name: Set up code
         uses: actions/checkout@v2
 
+     - name: Run Conditional Task
+       run: |
+         if [[ "${{ github.event_name }}" == "pull_request" || "${{ github.ref }}" =~ ^refs/heads/(develop|release/) ]]; then
+          echo "Starting the task..."
+           # Add your task steps here
+         else
+           echo "Task not started."
+         fi       
+
       - name: Encrypt secret using OpenSSL
         id: encrypt
         run: |
