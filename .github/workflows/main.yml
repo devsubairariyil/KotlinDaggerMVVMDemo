@@ -24,6 +24,7 @@ jobs:
           echo "Blocks: ${{  env.BLOCKS_OUTPUT }}"
           echo "New: ${{  env.TASK_OUTPUT }}"
           echo "Old: ${{  steps.test.outputs.sample }}"
+          echo "New - 1: ${{  steps.test.outputs.test-data }}"
 
   demo:
     name: Demo
