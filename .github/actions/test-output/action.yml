@@ -1,0 +1,11 @@
+name: Feature Scanner
+description: 'Task to create config json'
+
+
+
+runs:
+  using: 'node12'
+  main: 'test-output.js'
+
+
+# Add any additional steps here as needed for your specific workflow

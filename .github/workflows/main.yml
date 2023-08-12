@@ -15,7 +15,7 @@ jobs:
       - name: Print Repo Variable
         run: echo variable - ${{ vars.FILE_PATH }}
       - name: Set Outputs
-        run: node test-output.js
+        uses: ./.github/actions/test-output
       - name: Use Output
         run: |
           echo "Blocks: $BLOCKS_OUTPUT"
