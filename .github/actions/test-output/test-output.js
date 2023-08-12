@@ -1,6 +1,5 @@
 // set-outputs.js
-
-import * as core from '@actions/core';
+const core = require('@actions/core');
 const fs = require('fs');
 
 
