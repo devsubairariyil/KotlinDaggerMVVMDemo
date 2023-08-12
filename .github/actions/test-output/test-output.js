@@ -13,6 +13,7 @@ async function run() {
     process.env['TASK_OUTPUT'] = 'Hhhaaa';
     console.log(`TASK_OUTPUT=HaHa`);
     process.env.OUTPUT_TEST_DATA = 'This is very special'
+    console.log(`SUM_OUTPUT=${blocks}`);
     //process.stdout.write(`::set-output name=sample::${blocks}\n`);
     const shellCommand = `"sample=${blocks}" >> $GITHUB_ENV`;
     console.log(shellCommand);
