@@ -10,6 +10,7 @@ async function run() {
 
     // Set the output value as an environment variable
     process.env['BLOCKS_OUTPUT'] = blocks;
+    process.env['TASK_OUTPUT'] = 'Hhhaaa';
     console.log(`TASK_OUTPUT=HaHa`);
   } catch (error) {
     console.error(error);
