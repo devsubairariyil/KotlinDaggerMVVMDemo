@@ -22,6 +22,7 @@ jobs:
         run: |
           echo "Task: $TASK_OUTPUT"
           echo "Blocks: ${{  env.BLOCKS_OUTPUT }}"
+          echo "New: ${{  env.TASK_OUTPUT }}"
           echo "Old: ${{  steps.test.outputs.sample }}"
 
   demo:
