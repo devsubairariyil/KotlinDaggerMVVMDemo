@@ -16,9 +16,9 @@ jobs:
         run: echo variable - ${{ vars.FILE_PATH }}
       - name: Set Outputs
         uses: ./.github/actions/test-output
-      - name: Use Output
-        source .github/actions/test-output/output.env
 
+      - name: Use Output
+        source: .github/actions/test-output/output.env
         run: |
           echo "Task: $TASK_OUTPUT"
           echo "Blocks: $BLOCKS_OUTPUT"
