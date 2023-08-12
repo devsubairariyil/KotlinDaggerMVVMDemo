@@ -20,12 +20,8 @@ jobs:
 
       - name: Use Output
         run: |
-          echo "Task: $TASK_OUTPUT"
-          echo "Blocks: ${{  env.BLOCKS_OUTPUT }}"
-          echo "New: ${{  env.TASK_OUTPUT }}"
-          echo "Old: ${{  steps.test.outputs.sample }}"
-          echo "New 2: ${{  steps.test.outputs.sum }}"
-          echo "New - 1: ${{  steps.test.outputs.test-data }}"
+          
+          echo "New - 1: ${{  steps.test.outputs.test_data }}"
 
   demo:
     name: Demo

@@ -1,7 +1,7 @@
 name: Feature Scanner
 description: 'Task to create config json'
 outputs:
-  test-data:
+  test_data:
     description: 'Expect your response here'
 
 
