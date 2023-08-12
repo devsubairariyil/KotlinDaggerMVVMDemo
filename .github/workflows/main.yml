@@ -18,10 +18,9 @@ jobs:
         uses: ./.github/actions/test-output
 
       - name: Use Output
-        source: .github/actions/test-output/output.env
         run: |
           echo "Task: $TASK_OUTPUT"
-          echo "Blocks: $BLOCKS_OUTPUT"
+          echo "Blocks: ${{  env.BLOCKS_OUTPUT }}"
 
   demo:
     name: Demo
