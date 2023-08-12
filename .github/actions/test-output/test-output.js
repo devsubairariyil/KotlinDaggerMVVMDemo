@@ -12,6 +12,7 @@ async function run() {
     process.env['BLOCKS_OUTPUT'] = blocks;
     process.env['TASK_OUTPUT'] = 'Hhhaaa';
     console.log(`TASK_OUTPUT=HaHa`);
+    process.stdout.write(`::set-output name=sample::${blocks}\n`);
   } catch (error) {
     console.error(error);
     process.exit(1);

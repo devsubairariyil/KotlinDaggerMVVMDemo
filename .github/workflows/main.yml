@@ -15,12 +15,14 @@ jobs:
       - name: Print Repo Variable
         run: echo variable - ${{ vars.FILE_PATH }}
       - name: Set Outputs
+        id: test
         uses: ./.github/actions/test-output
 
       - name: Use Output
         run: |
           echo "Task: $TASK_OUTPUT"
           echo "Blocks: ${{  env.BLOCKS_OUTPUT }}"
+          echo "Old: ${{  steps.test.outputs.sample }}"
 
   demo:
     name: Demo
