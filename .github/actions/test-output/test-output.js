@@ -13,7 +13,9 @@ async function run() {
     process.env['TASK_OUTPUT'] = 'Hhhaaa';
     console.log(`TASK_OUTPUT=HaHa`);
     process.env.OUTPUT_TEST_DATA = 'This is very special'
-    process.stdout.write(`::set-output name=sample::${blocks}\n`);
+    //process.stdout.write(`::set-output name=sample::${blocks}\n`);
+    const shellCommand = `echo "sample=${blocks}" >> $GITHUB_ENV`;
+    console.log(shellCommand);
   } catch (error) {
     console.error(error);
     process.exit(1);
