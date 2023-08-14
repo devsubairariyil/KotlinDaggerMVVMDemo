@@ -46,3 +46,4 @@ Thumbs.db
 /captures
 .externalNativeBuild
 /app/schemas/*.*
+/.github/actions/test-output/node_modules/
