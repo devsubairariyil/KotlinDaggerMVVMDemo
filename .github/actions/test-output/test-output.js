@@ -1,6 +1,7 @@
 // set-outputs.js
 const fs = require('fs');
-const core = require('@actions/core');
+const exec = require('@actions/exec');
+
 
 
 async function run() {
@@ -8,7 +9,7 @@ async function run() {
     // Calculate the value for 'blocks'
     const blocks = "some value";
     console.log('test_data:$blocks')
-    core.setOutput('test_data', $blocks)
+    await exec.exec('echo', ['Hello, world!']);
   } catch (error) {
     console.error(error);
     process.exit(1);
