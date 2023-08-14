@@ -1,0 +1,1 @@
+GRADLE_PARAMETER="$(echo $SAVED_OUTPUT_VALUE | sed 's/_/:/g')"
