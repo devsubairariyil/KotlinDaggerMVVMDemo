@@ -1,6 +1,6 @@
 // set-outputs.js
 const fs = require('fs');
-const exec = require('@actions/exec');
+const { exec } = require('child_process');
 
 
 
@@ -10,6 +10,16 @@ async function run() {
     const blocks = "some value";
     console.log('test_data:$blocks')
     await exec.exec('echo', ['Hello, world!']);
+    exec('echo test_data=$blocks >> GITHUB_OUTPUT', (err, stdout, stderr) => {
+      if (err) {
+        // node couldn't execute the command
+        return;
+      }
+
+      // the *entire* stdout and stderr (buffered)
+      console.log(`stdout: ${stdout}`);
+      console.log(`stderr: ${stderr}`);
+    });
   } catch (error) {
     console.error(error);
     process.exit(1);
