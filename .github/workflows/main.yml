@@ -22,6 +22,7 @@ jobs:
         run: |
           
           echo "New - 1: ${{  steps.test.outputs.test_data }}"
+          echo "Test - 1: ${{  steps.test.outputs.test_data1 }}"
 
   demo:
     name: Demo
