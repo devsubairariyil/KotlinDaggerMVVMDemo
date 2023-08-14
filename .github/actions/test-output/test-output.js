@@ -9,7 +9,6 @@ async function run() {
     // Calculate the value for 'blocks'
     const blocks = "some value";
     console.log('test_data:$blocks')
-    await exec.exec('echo', ['Hello, world!']);
     exec('echo test_data=$blocks >> GITHUB_OUTPUT', (err, stdout, stderr) => {
       if (err) {
         // node couldn't execute the command
