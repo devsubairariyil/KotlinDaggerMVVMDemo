@@ -1,31 +1,12 @@
-// set-outputs.js
-const fs = require('fs');
 const { exec } = require('child_process');
 
+const outputValue = 'Your output value'; // Replace this with your actual output value
 
-
-async function run() {
-  try {
-    // Calculate the value for 'blocks'
-    const blocks = "some value";
-    console.log('test_data:$blocks')
-     exec('echo test_data1=Hi >> GITHUB_OUTPUT')
-    exec('echo test_data=${blocks} >> GITHUB_OUTPUT', (err, stdout, stderr) => {
-      if (err) {
-        // node couldn't execute the command
-        return;
-      }
-
-      // the *entire* stdout and stderr (buffered)
-      console.log(`stdout: ${stdout}`);
-      console.log(`stderr: ${stderr}`);
-    });
-  } catch (error) {
+exec(`echo "MY_OUTPUT_NAME=${outputValue}" >> $GITHUB_ENV`, (error, stdout, stderr) => {
+  if (error) {
     console.error(error);
     process.exit(1);
   }
-}
-
-run();
-
-
+  console.log(stdout);
+  console.error(stderr);
+});
