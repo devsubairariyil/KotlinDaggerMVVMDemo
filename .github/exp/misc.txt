@@ -1,1 +1,7 @@
 GRADLE_PARAMETER="$(echo $SAVED_OUTPUT_VALUE | sed 's/_/:/g')"
+
+
+SELECT count(quantity) as totalQuantity, upc
+FROM events
+FACET upc
+HAVING totalQuantity > 1
