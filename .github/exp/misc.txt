@@ -25,7 +25,7 @@ jobs:
   include:
     - template: my_job_template.yml
       with:
-        custom_input: ${{ inputs_map[github.event.inputs.custom_input] }}
+
       
 variables:
   inputs_map: &inputs_map
