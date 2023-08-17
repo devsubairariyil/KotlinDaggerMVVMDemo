@@ -25,7 +25,566 @@ jobs:
   include:
     - template: my_job_template.yml
       with:
-        custom_input: ${{ inputs_map[github.event.inputs.custom_input] }}
+        Default (GPT-3.5)
+
+        User
+        in github action, I have input for workflow dispatch.
+        this input is passed to a job
+        I need to pass a default value if it was triggered by other event like push or pull request
+        ChatGPT
+        Certainly! You can achieve this by using conditional expressions in your GitHub Actions workflow. In the job where you want to pass a default value to the input, you can check the context of the trigger event and set the input accordingly.
+
+        Here's an example of how you might structure your workflow YAML:
+
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          workflow_dispatch:
+            inputs:
+              custom_input:
+                description: 'Custom input'
+                required: false
+                default: 'default_value'
+
+        jobs:
+          my_job:
+            runs-on: ubuntu-latest
+
+            steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Run job
+              run: |
+                if [[ -z "${{ github.event.inputs.custom_input }}" ]]; then
+                  CUSTOM_INPUT="default_value"
+                else
+                  CUSTOM_INPUT="${{ github.event.inputs.custom_input }}"
+                fi
+
+                echo "Custom Input: $CUSTOM_INPUT"
+        In this example, if the workflow is triggered by a workflow_dispatch event and the custom_input is not provided, it will use the default value "default_value". If the custom_input is provided, it will use the provided value. This way, you can pass a default value when the workflow is triggered by other events like push or pull request.
+
+        Remember to adjust the job steps according to your specific needs.
+
+
+
+
+        User
+        the job is in a template in different file
+        ChatGPT
+        If your job is defined in a template file and you want to pass a default value to an input based on the trigger event, you can modify the template and reference it in your main workflow YAML. Here's how you can achieve that:
+
+        Create a template YAML file (e.g., my_job_template.yml) with the job definition:
+        yaml
+        Copy code
+        # my_job_template.yml
+        jobs:
+          my_job:
+            runs-on: ubuntu-latest
+
+            steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Run job
+              run: |
+                if [[ -z "${{ inputs.custom_input }}" ]]; then
+                  CUSTOM_INPUT="default_value"
+                else
+                  CUSTOM_INPUT="${{ inputs.custom_input }}"
+                fi
+
+                echo "Custom Input: $CUSTOM_INPUT"
+        In your main workflow YAML file, reference the template and pass the input:
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          workflow_dispatch:
+            inputs:
+              custom_input:
+                description: 'Custom input'
+                required: false
+                default: ''
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              with:
+                custom_input: ${{ github.event.inputs.custom_input }}
+        With this setup, when the workflow is triggered by a workflow_dispatch event, it will use the provided custom_input value if available. Otherwise, it will use the default value "default_value". If the workflow is triggered by other events like push or pull request, the custom_input will be an empty string, and the template job will handle setting the default value.
+
+        Make sure to adjust the file paths and template names as needed for your project structure.
+
+
+
+
+        User
+        here I need to pass default value when triggered by a push
+        ChatGPT
+        I apologize for the confusion. If you want to pass a default value to an input only when the workflow is triggered by a push event, you can modify the template and main workflow YAML as follows:
+
+        Update the template YAML file (my_job_template.yml) to set the default value when triggered by a push event:
+        yaml
+        Copy code
+        # my_job_template.yml
+        jobs:
+          my_job:
+            runs-on: ubuntu-latest
+
+            steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Run job
+              run: |
+                if [[ -z "${{ inputs.custom_input }}" && "${{ github.event_name }}" == 'push' ]]; then
+                  CUSTOM_INPUT="default_value"
+                else
+                  CUSTOM_INPUT="${{ inputs.custom_input }}"
+                fi
+
+                echo "Custom Input: $CUSTOM_INPUT"
+        In your main workflow YAML file, reference the template and pass the input:
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              with:
+                custom_input: ${{ github.event.inputs.custom_input }}
+        With this configuration, the template job will only set the default value for custom_input when the workflow is triggered by a push event. For other events, the provided custom_input value will be used.
+
+        Again, please adjust the file paths, template names, and event conditions as needed for your project setup.
+
+
+
+
+        User
+        I can't hardcode default value in template
+        ChatGPT
+        I understand that you need to dynamically set the default value in the main workflow YAML, without hardcoding it in the template. Here's how you can achieve that:
+
+        Update the template YAML file (my_job_template.yml) to use an environment variable for the default value:
+        yaml
+        Copy code
+        # my_job_template.yml
+        jobs:
+          my_job:
+            runs-on: ubuntu-latest
+
+            steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Run job
+              run: |
+                if [[ -z "${{ inputs.custom_input }}" && "${{ github.event_name }}" == 'push' ]]; then
+                  CUSTOM_INPUT="$DEFAULT_CUSTOM_INPUT"
+                else
+                  CUSTOM_INPUT="${{ inputs.custom_input }}"
+                fi
+
+                echo "Custom Input: $CUSTOM_INPUT"
+        In your main workflow YAML file, define the default value as an environment variable and reference it when including the template:
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              env:
+                DEFAULT_CUSTOM_INPUT: 'default_value'
+              with:
+                custom_input: ${{ github.event.inputs.custom_input }}
+        With this approach, the default value is defined as an environment variable in the main workflow YAML and passed to the template when including it. The template job will use the value of $DEFAULT_CUSTOM_INPUT as the default value for custom_input when triggered by a push event.
+
+        Make sure to adjust the environment variable name and default value according to your requirements.
+
+
+
+
+        User
+        can I add a if for custom input to check if it has value
+        ChatGPT
+        Certainly! You can add a conditional check to the template to determine whether the custom_input has a value and act accordingly. Here's how you can modify the template to include this check:
+
+        yaml
+        Copy code
+        # my_job_template.yml
+        jobs:
+          my_job:
+            runs-on: ubuntu-latest
+
+            steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Run job
+              run: |
+                if [[ -n "${{ inputs.custom_input }}" ]]; then
+                  CUSTOM_INPUT="${{ inputs.custom_input }}"
+                elif [[ "${{ github.event_name }}" == 'push' ]]; then
+                  CUSTOM_INPUT="$DEFAULT_CUSTOM_INPUT"
+                else
+                  CUSTOM_INPUT=""
+                fi
+
+                echo "Custom Input: $CUSTOM_INPUT"
+        In this modified template, we first check if custom_input has a value (-n "${{ inputs.custom_input }}"). If it does, we use that value. If not, we check if the event is a push event ("${{ github.event_name }}" == 'push') and use the default value if applicable. If neither condition is met, we set CUSTOM_INPUT to an empty string.
+
+        Then, in your main workflow YAML, you can follow the same steps as before to include the template and define the default value as an environment variable:
+
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              env:
+                DEFAULT_CUSTOM_INPUT: 'default_value'
+              with:
+                custom_input: ${{ github.event.inputs.custom_input }}
+        With this setup, the template job will handle the logic to determine the value of custom_input based on whether it's provided, the event type, and the default value.
+
+
+
+
+        User
+        I mean while passing the input
+        ChatGPT
+        Certainly! You can include a conditional check directly in the main workflow YAML file when passing the custom_input value to the template. Here's how you can achieve that:
+
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              with:
+                custom_input: ${{ github.event.inputs.custom_input || env.DEFAULT_CUSTOM_INPUT }}
+              env:
+                DEFAULT_CUSTOM_INPUT: 'default_value'
+        In this setup, the custom_input value is passed to the template job. The conditional expression github.event.inputs.custom_input || env.DEFAULT_CUSTOM_INPUT checks if custom_input is provided by the event. If it's not provided (null or empty), it falls back to using the value of the environment variable DEFAULT_CUSTOM_INPUT.
+
+        This way, you don't modify the template itself, and the conditional check is done at the point of passing the input value in the main workflow YAML.
+
+
+
+
+        User
+        modify this, to check if the input is empty then pass default
+        ChatGPT
+        Certainly! Here's the modified version that checks if the input is empty and passes the default value if needed:
+
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              with:
+                custom_input: ${{ github.event.inputs.custom_input || env.DEFAULT_CUSTOM_INPUT }}
+              env:
+                DEFAULT_CUSTOM_INPUT: 'default_value'
+        With this configuration, if the custom_input is empty or not provided in the event, it will use the value of the DEFAULT_CUSTOM_INPUT environment variable as the default value.
+
+
+
+
+        User
+        I dont want to use env. simply pass hardcoded default value
+        ChatGPT
+        Certainly! If you want to pass a hardcoded default value directly without using an environment variable, you can modify the main workflow YAML like this:
+
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              with:
+                custom_input: ${{ github.event.inputs.custom_input || 'default_value' }}
+        This configuration will check if custom_input is empty or not provided in the event. If it's empty, it will use the hardcoded default value 'default_value'. If custom_input is provided, it will use the provided value.
+
+
+
+
+        User
+        if the input is All, then pass @Full
+        ChatGPT
+        Certainly! If you want to check if the input is equal to "All" and pass a specific value (@Full in this case), you can modify the main workflow YAML like this:
+
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              with:
+                custom_input: ${{ 'default_value' if github.event.inputs.custom_input == 'All' else github.event.inputs.custom_input }}
+        In this configuration, it checks if the custom_input value is equal to "All". If it is, it sets the custom_input to @Full. Otherwise, it uses the provided input value. If the input value is empty or not provided, it will default to 'default_value'.
+
+
+
+
+        User
+        from workflow dispatch input i have all, regression.
+        if all selected then pass @Full
+        if regression selected pass @Regreasion
+        if triggered by other events meaning this input is not selected then pads @Full
+        ChatGPT
+        Got it! To achieve the behavior you've described, you can modify the main workflow YAML as follows:
+
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+          workflow_dispatch:
+            inputs:
+              custom_input:
+                description: 'Custom input'
+                required: false
+                default: 'all'
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              with:
+                custom_input: ${{ '@Full' if github.event.inputs.custom_input == 'all' else '@Regression' if github.event.inputs.custom_input == 'regression' else '@Full' }}
+        In this configuration, the workflow_dispatch input has three possible values: "all", "regression", or any other value. Based on these inputs, it sets the custom_input value in the template:
+
+        If "all" is selected, it sets custom_input to @Full.
+        If "regression" is selected, it sets custom_input to @Regression.
+        For any other value (or if no input is provided), it defaults to @Full.
+        Please adjust the input values and corresponding values in the template based on your specific needs.
+
+
+
+
+        User
+        if I have more options to map how do I neatly write this
+        ChatGPT
+        If you have more options to map and want to keep the configuration neat and maintainable, you can use a dictionary-like approach using YAML anchors and aliases. This will make the configuration more organized and easier to extend. Here's how you can achieve that:
+
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+          workflow_dispatch:
+            inputs:
+              custom_input:
+                description: 'Custom input'
+                required: false
+                default: 'all'
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              with:
+                custom_input: ${{ inputs_map[github.event.inputs.custom_input] }}
+
+        variables:
+          inputs_map: &inputs_map
+            all: '@Full'
+            regression: '@Regression'
+            other: '@Full'
+            # Add more mappings here as needed
+        In this configuration:
+
+        The inputs_map anchor defines the mapping of input values to their corresponding desired values.
+        The main workflow uses inputs_map to translate the input values into the desired output values.
+        This approach allows you to neatly define and extend the mappings without cluttering the main workflow YAML. You can add more mappings as needed by simply adding entries to the inputs_map dictionary.
+
+        Remember to adjust the input values and corresponding desired values in the inputs_map anchor based on your specific use case.
+
+
+
+
+        User
+        what one value is like NOT REQUIRED
+        ChatGPT
+        If you have an option where the input is not required and you want to handle it in the workflow, you can update the configuration like this:
+
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+          workflow_dispatch:
+            inputs:
+              custom_input:
+                description: 'Custom input'
+                required: false
+                default: 'all'
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              with:
+                custom_input: ${{ inputs_map[github.event.inputs.custom_input] }}
+
+        variables:
+          inputs_map: &inputs_map
+            all: '@Full'
+            regression: '@Regression'
+            other: '@Full'
+            not_required: ''  # Empty value for not required input
+            # Add more mappings here as needed
+        With this setup, the not_required value maps to an empty string '', indicating that the input is not required. You can handle this case in the template or downstream steps of your workflow.
+
+        As before, remember to adjust the input values and corresponding desired values in the inputs_map anchor based on your specific requirements.
+
+
+
+
+        User
+        my input type is choice with option ALL, NOT REQUIRED, REGRESSION, SANITY.
+        I need to pass mapped tags to selected option. if option is not required I will pass empty
+        ChatGPT
+        Certainly! Here's how you can achieve the mapping of input choices to mapped tags while handling the "NOT REQUIRED" option:
+
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+          workflow_dispatch:
+            inputs:
+              custom_input:
+                description: 'Custom input'
+                required: false
+                default: 'ALL'
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              with:
+                custom_input: ${{ inputs_map[github.event.inputs.custom_input] }}
+
+        variables:
+          inputs_map: &inputs_map
+            ALL: '@Full'
+            REGRESSION: '@Regression'
+            SANITY: '@Sanity'
+            NOT REQUIRED: ''  # Empty value for not required input
+            # Add more mappings here as needed
+        In this setup:
+
+        The workflow input has choices: "ALL", "NOT REQUIRED", "REGRESSION", "SANITY".
+        The inputs_map anchor maps these choices to the corresponding tags.
+        For the "NOT REQUIRED" option, it maps to an empty string ''.
+        You can use this configuration to map the input choices to tags as required. Make sure to adjust the input choices and corresponding mappings in the inputs_map anchor based on your specific needs.
+
+
+
+
+        User
+        can I rewrite this without input map
+        ChatGPT
+        Certainly! You can achieve this without using an inputs_map by directly using conditional expressions to determine the mapped tags based on the input choice. Here's how you can do that:
+
+        yaml
+        Copy code
+        name: My Workflow
+
+        on:
+          push:
+            branches:
+              - main
+          workflow_dispatch:
+            inputs:
+              custom_input:
+                description: 'Custom input'
+                required: false
+                default: 'ALL'
+
+        jobs:
+          include:
+            - template: my_job_template.yml
+              with:
+                custom_input: ${{ github.event.inputs.custom_input == 'ALL' && '@Full' || github.event.inputs.custom_input == 'REGRESSION' && '@Regression' || github.event.inputs.custom_input == 'SANITY' && '@Sanity' || '' }}
+        This configuration directly checks the input choice and maps it to the desired tags. It also handles the "NOT REQUIRED" option by using '' as the tag value.
+
+        While this approach doesn't use an inputs_map, it can become less maintainable if you have a lot of choices or if the mapping logic becomes more complex. Make sure to adjust the input choices and corresponding tag mappings based on your specific requirements.
+
+
+
+
+        User
+        what does this do
+        ChatGPT
+        Apologies for the confusion. The provided configuration uses a series of conditional expressions to determine the mapped tags based on the input choice. Let me break it down for you:
+
+        yaml
+        Copy code
+        custom_input: ${{
+          github.event.inputs.custom_input == 'ALL' && '@Full' ||
+          github.event.inputs.custom_input == 'REGRESSION' && '@Regression' ||
+          github.event.inputs.custom_input == 'SANITY' && '@Sanity' ||
+          ''
+        }}
       
 variables:
   inputs_map: &inputs_map
