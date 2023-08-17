@@ -5,3 +5,31 @@ SELECT count(quantity) as totalQuantity, upc
 FROM events
 FACET upc
 HAVING totalQuantity > 1
+
+
+
+name: My Workflow
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      custom_input:
+        description: 'Custom input'
+        required: false
+        default: 'all'
+
+jobs:
+  include:
+    - template: my_job_template.yml
+      with:
+        custom_input: ${{ inputs_map[github.event.inputs.custom_input] }}
+      
+variables:
+  inputs_map: &inputs_map
+    all: '@Full'
+    regression: '@Regression'
+    other: '@Full'
+    # Add more mappings here as needed
