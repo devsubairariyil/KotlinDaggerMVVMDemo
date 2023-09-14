@@ -1,0 +1,29 @@
+name: Dispatch Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      debugEnabled:
+        description: 'Enable Debug'
+        required: true
+        default: 'false'
+      logEnabled:
+        description: 'Enable Log'
+        required: true
+        default: 'false'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Encode Inputs to Base64
+        run: |
+          inputs_base64=$(echo -n "debugEnabled=${{ github.event.inputs.debugEnabled }} \\n logEnabled=${{ github.event.inputs.logEnabled }}" | base64)
+          echo "Inputs in Base64: $inputs_base64"
+
+      - name: Your Build Job
+        run: |
+          # Use $inputs_base64 in your build job as needed
+          # For example, pass it as an argument to your script
+          ./your_build_script.sh "$inputs_base64"
