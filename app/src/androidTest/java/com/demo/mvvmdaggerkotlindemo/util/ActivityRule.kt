@@ -17,4 +17,6 @@ class MyEspressoTest {
         // Your Espresso test code here
         Espresso.onView(withId(R.id.someViewId)).perform(...) // Replace with your test actions
     }
+
+
 }
