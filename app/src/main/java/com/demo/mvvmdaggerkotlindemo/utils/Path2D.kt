@@ -4,36 +4,35 @@ class Path2D {
     fun getPossibleWays(points: Array<Array<Int>>): Int {
         val rows = points.size
         val columns = points[0].size
-        val visited = Array(rows) { BooleanArray(columns) }
+        val dp = Array(rows) { IntArray(columns) }
 
-        fun isValid(x: Int, y: Int): Boolean {
-            return x in 0 until rows && y in 0 until columns && points[x][y] == 0 && !visited[x][y]
+        // Initialize the top-left corner
+        dp[0][0] = if (points[0][0] == 0) 1 else 0
+
+        // Initialize the first row
+        for (col in 1 until columns) {
+            dp[0][col] = if (points[0][col] == 0) dp[0][col - 1] else 0
         }
 
-        fun explorePath(x: Int, y: Int): Int {
-            if (x == rows - 1 && y == columns - 1) {
-                return 1
-            }
+        // Initialize the first column
+        for (row in 1 until rows) {
+            dp[row][0] = if (points[row][0] == 0) dp[row - 1][0] else 0
+        }
 
-            visited[x][y] = true
-            val directions = arrayOf(-1 to 0, 1 to 0, 0 to -1, 0 to 1)
-
-            var paths = 0
-
-            for (dir in directions) {
-                val newX = x + dir.first
-                val newY = y + dir.second
-
-                if (isValid(newX, newY)) {
-                    paths += explorePath(newX, newY)
+        // Fill the DP table
+        for (row in 1 until rows) {
+            for (col in 1 until columns) {
+                if (points[row][col] == 0) {
+                    dp[row][col] = dp[row - 1][col] + dp[row][col - 1]
+                } else {
+                    dp[row][col] = 0
                 }
             }
-
-            visited[x][y] = false
-            return paths
         }
 
-        return explorePath(0, 0)
+        // The bottom-right corner contains the result
+        return dp[rows - 1][columns - 1]
+
     }
 
     fun main() {
