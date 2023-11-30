@@ -1,28 +1,30 @@
+<!-- ic_cross_in_circle.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:viewportHeight="24"
+    android:tint="#FF0000"> <!-- Change tint color as needed -->
 
     <!-- Circle -->
-    <item
-        android:width="24dp"
-        android:height="24dp"/>
+    <path
+        android:fillColor="#00000000" <!-- Transparent fill -->
+    android:strokeColor="#FF0000"
+    android:strokeWidth="2"
+    android:pathData="M12,2
+    A10,10 0 1,1 12,22
+    A10,10 0 1,1 12,2" />
 
-    <!-- Horizontal Line -->
-    <item
-        android:width="8dp"
-        android:height="2dp"
-        android:drawable="@android:drawable/alert_dark_frame"
-        android:gravity="center_horizontal"
-        android:top="11dp" />
+    <!-- Top-left to bottom-right diagonal line (X) -->
+    <path
+        android:strokeColor="#FF0000"
+        android:strokeWidth="2"
+        android:pathData="M8,8 L16,16" />
 
-    <!-- Vertical Line -->
-    <item
-        android:width="2dp"
-        android:height="8dp"
-        android:drawable="@android:drawable/alert_dark_frame"
-        android:gravity="center_vertical"
-        android:left="11dp" />
+    <!-- Top-right to bottom-left diagonal line (X) -->
+    <path
+        android:strokeColor="#FF0000"
+        android:strokeWidth="2"
+        android:pathData="M16,8 L8,16" />
 
 </vector>
