@@ -1,0 +1,15 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Printer Icon -->
+    <item android:drawable="@drawable/printer_icon" />
+
+    <!-- Tick Mark -->
+    <item
+        android:width="24dp"
+        android:height="24dp"
+        android:drawable="@drawable/ic_check"
+        android:gravity="center"
+        android:left="12dp"
+        android:top="12dp" />
+
+</layer-list>

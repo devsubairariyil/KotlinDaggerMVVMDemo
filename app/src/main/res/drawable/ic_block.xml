@@ -1,0 +1,28 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Circle -->
+    <item
+        android:width="24dp"
+        android:height="24dp"/>
+
+    <!-- Horizontal Line -->
+    <item
+        android:width="8dp"
+        android:height="2dp"
+        android:drawable="@android:drawable/alert_dark_frame"
+        android:gravity="center_horizontal"
+        android:top="11dp" />
+
+    <!-- Vertical Line -->
+    <item
+        android:width="2dp"
+        android:height="8dp"
+        android:drawable="@android:drawable/alert_dark_frame"
+        android:gravity="center_vertical"
+        android:left="11dp" />
+
+</vector>
