@@ -3,28 +3,27 @@
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
-    android:viewportHeight="24"
-    android:tint="#FF0000"> <!-- Change tint color as needed -->
+    android:viewportHeight="24"> <!-- Change tint color as needed -->
 
     <!-- Circle -->
     <path
-        android:fillColor="#00000000" <!-- Transparent fill -->
-    android:strokeColor="#FF0000"
-    android:strokeWidth="2"
-    android:pathData="M12,2
-    A10,10 0 1,1 12,22
-    A10,10 0 1,1 12,2" />
+        android:fillColor="#F2F2F2"
+        android:pathData="M12,2 A10,10 0 1,1 12,22 10,10 0 1,1 12,2"
+        android:strokeWidth="2"
+        android:strokeColor="#FF0000" />
 
     <!-- Top-left to bottom-right diagonal line (X) -->
     <path
-        android:strokeColor="#FF0000"
+        android:pathData="M8,8 L16,16"
         android:strokeWidth="2"
-        android:pathData="M8,8 L16,16" />
+        android:fillColor="#F2F2F2"
+        android:strokeColor="#FF0000"/>
 
     <!-- Top-right to bottom-left diagonal line (X) -->
     <path
-        android:strokeColor="#FF0000"
+        android:pathData="M16,8 L8,16"
         android:strokeWidth="2"
-        android:pathData="M16,8 L8,16" />
+        android:fillColor="#F2F2F2"
+        android:strokeColor="#FF0000" />
 
 </vector>

@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Circle with green border -->
+    <path
+        android:fillColor="#F2F2F2"
+        android:pathData="M12,2 A10,10 0 1,1 12,22 10,10 0 1,1 12,2"
+        android:strokeWidth="2"
+        android:strokeColor="#00FF00" />
+
+    <!-- Tick inside the circle -->
+    <path
+        android:pathData="M8,12 L11,15 L16,8"
+        android:strokeWidth="2"
+        android:strokeColor="#00FF00"
+        android:fillColor="#00000000" />
+
+</vector>
