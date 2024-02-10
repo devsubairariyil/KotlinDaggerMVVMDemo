@@ -47,3 +47,45 @@ class Path2D {
     }
 
 }
+fun updateAppKey(newAppKey: String) {
+    val file = File("/sdcard/MyAppData/config.xml")
+
+    // Create a FileInputStream to read the file
+    val fileInputStream = FileInputStream(file)
+
+    // Create an XmlPullParser
+    val parser = Xml.newPullParser()
+    parser.setInput(fileInputStream, null)
+
+    // Create a StringBuilder to store the updated XML content
+    val updatedXml = StringBuilder()
+
+    while (parser.next() != XmlPullParser.END_DOCUMENT) {
+        when (parser.eventType) {
+            XmlPullParser.START_TAG -> {
+                // Check if it's the tag you want to update
+                if (parser.name == "AppKey") {
+                    // Replace the old value with the new one
+                    updatedXml.append("<${parser.name}>$newAppKey</${parser.name}>")
+                } else {
+                    // Keep other tags as they are
+                    updatedXml.append("<${parser.name}>")
+                }
+            }
+            XmlPullParser.END_TAG -> {
+                updatedXml.append("</${parser.name}>")
+            }
+            XmlPullParser.TEXT -> {
+                updatedXml.append(parser.text)
+            }
+        }
+    }
+
+    // Close the FileInputStream
+    fileInputStream.close()
+
+    // Write the updated XML back to the file
+    val fileOutputStream = FileOutputStream(file)
+    fileOutputStream.write(updatedXml.toString().toByteArray())
+    fileOutputStream.close()
+}
